@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="545.0"
+            prefWidth="889.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ui.MainController">
+    <children>
+        <ChoiceBox fx:id="methodBox" layoutX="35.0" layoutY="38.0" prefHeight="41.0" prefWidth="88.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="GET"/>
+                    <String fx:value="POST"/>
+                    <String fx:value="PUT"/>
+                    <String fx:value="DELETE"/>
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <TextField fx:id="urlTf" layoutX="123.0" layoutY="38.0" prefHeight="41.0" prefWidth="599.0" promptText="url"/>
+        <Button fx:id="sendButton" layoutX="751.0" layoutY="38.0" mnemonicParsing="false" prefHeight="41.0"
+                prefWidth="76.0" text="Send" onAction="#sendRequest"/>
+        <TabPane layoutX="35.0" layoutY="106.0" prefHeight="369.0" prefWidth="816.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab closable="false" text="Params">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <TableView layoutY="31.0" prefHeight="200.0" prefWidth="816.0">
+                                    <columns>
+                                        <TableColumn prefWidth="75.0" text="Key"/>
+                                        <TableColumn prefWidth="75.0" text="Value"/>
+                                        <TableColumn prefWidth="132.0" text="Description"/>
+                                    </columns>
+                                </TableView>
+                                <Label layoutX="2.0" layoutY="1.0" prefHeight="27.0" prefWidth="106.0"
+                                       text="Quert Params"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab closable="false" text="Headers">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <TableView layoutY="31.0" prefHeight="200.0" prefWidth="816.0">
+                                    <columns>
+                                        <TableColumn prefWidth="75.0" text="Key"/>
+                                        <TableColumn prefWidth="75.0" text="Value"/>
+                                        <TableColumn prefWidth="132.0" text="Description"/>
+                                    </columns>
+                                </TableView>
+                                <Label layoutX="2.0" layoutY="1.0" prefHeight="27.0" prefWidth="106.0"
+                                       text="Headers(0)"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab text="Body">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <RadioButton layoutX="28.0" layoutY="10.0" mnemonicParsing="false" text="none">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="tg1"/>
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton layoutX="99.0" layoutY="10.0" mnemonicParsing="false" text="form-data"
+                                             toggleGroup="$tg1"/>
+                                <RadioButton layoutX="204.0" layoutY="10.0" mnemonicParsing="false"
+                                             text="x-www-form-urlencoded" toggleGroup="$tg1"/>
+                                <RadioButton layoutX="417.0" layoutY="10.0" mnemonicParsing="false" text="raw"
+                                             toggleGroup="$tg1"/>
+                                <RadioButton layoutX="477.0" layoutY="10.0" mnemonicParsing="false" text="binary"
+                                             toggleGroup="$tg1"/>
+                                <Pane layoutX="-3.0" layoutY="47.0" prefHeight="267.0" prefWidth="816.0"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>
