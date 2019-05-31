@@ -17,7 +17,7 @@ public class InputOutputTransform {
      */
     public static void inputStream2OutputStream(InputStream is, OutputStream os) throws IOException {
         byte[] buffer = new byte[1024];
-        while ((is.read(buffer)) != 0) {
+        while ((is.read(buffer)) != -1) {
             os.write(buffer);
         }
     }

@@ -28,7 +28,6 @@ public class Header {
         int buffer;
         byte[] bf;
         try {
-//            String line;
             bf = new byte[is.available()];
             int pointer = 0;
             // 记录是否读取到首部结束的标志位，即'\n'连续出现两次说明首部已经读取完成

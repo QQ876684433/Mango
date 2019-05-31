@@ -4,7 +4,6 @@ import com.sun.istack.internal.Nullable;
 import http.util.HttpStatus;
 import http.util.header.RequestHeader;
 import http.util.header.ResponseHeader;
-import http.util.io.InputOutputTransform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -172,7 +171,6 @@ public class HttpResponse {
             String[] splits = new String(bf, Charset.defaultCharset()).split(" ");
             this.setVersion(splits[0]);
             this.setStatus(Integer.parseInt(splits[1]));
-            this.setVersion(splits[2]);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -212,13 +210,10 @@ public class HttpResponse {
 
         // 处理请求实体
         if (this.responseBody != null){
-            InputStream is = responseBody.getContent();
-            try {
-                InputOutputTransform.inputStream2OutputStream(is, outputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            pw.print(this.getResponseBodyText());
         }
+
+        pw.flush();
     }
 
     /**
