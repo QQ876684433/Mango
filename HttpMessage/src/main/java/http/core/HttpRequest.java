@@ -161,10 +161,6 @@ public class HttpRequest {
             this.setMethod(splits[0]);
             this.setUrl(splits[1]);
             this.setVersion(splits[2]);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -204,7 +200,7 @@ public class HttpRequest {
         pw.println(this.getVersion());
 
         // 输出请求首部
-        String headers = this.getHeader().getHeaderText();
+        String headers = this.getHeader().getHeaderText(this.requestBody.getMediaType().getCharset());
         pw.println(headers);
 
         // 输出空行
@@ -228,7 +224,8 @@ public class HttpRequest {
      */
     @Override
     public String toString() {
-        // todo
-        return super.toString();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        this.writeTo(os);
+        return os.toString();
     }
 }

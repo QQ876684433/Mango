@@ -1,6 +1,5 @@
 package http.core;
 
-import http.util.io.InputOutputTransform;
 import lombok.Getter;
 import lombok.Setter;
 

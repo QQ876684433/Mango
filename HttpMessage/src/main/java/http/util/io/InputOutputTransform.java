@@ -30,7 +30,7 @@ public class InputOutputTransform {
      * @param is 输入流
      * @param os 输出流
      */
-    public static void OutputStream2InputStream(InputStream is, OutputStream os) {
-
+    static void OutputStream2InputStream(InputStream is, OutputStream os) {
+        // can do nothing
     }
 }
