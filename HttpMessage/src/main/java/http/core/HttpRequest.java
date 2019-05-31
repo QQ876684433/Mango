@@ -120,7 +120,7 @@ public class HttpRequest {
 
         this.requestBody = new HttpBody(
                 this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                requestBody
+                new BufferedReader(new InputStreamReader(requestBody))
         );
     }
 
@@ -166,24 +166,18 @@ public class HttpRequest {
         }
 
         // 解析请求报文首部
-        this.header = new Header(requestInputStream);
+        this.header = new Header(br);
 
-        // 查看是否有实体部分
-        try {
-            if (requestInputStream.available() == 0) return;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // 解析请求报文实体部分
-        try {
-            this.requestBody = new HttpBody(
-                    this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                    requestInputStream
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // 解析请求报文实体部分（GET请求不解析实体部分）
+        if (!this.getMethod().equalsIgnoreCase(HttpMethod.GET))
+            try {
+                this.requestBody = new HttpBody(
+                        this.header.getProperty(RequestHeader.CONTENT_TYPE),
+                        br
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     /**
@@ -207,10 +201,10 @@ public class HttpRequest {
         pw.println();
 
         // 处理请求实体
-        if (this.requestBody != null){
+        if (this.requestBody != null) {
             InputStream is = requestBody.getContent();
             try {
-                InputOutputTransform.InputStream2OutputStream(is, outputStream);
+                InputOutputTransform.inputStream2OutputStream(is, outputStream);
             } catch (IOException e) {
                 e.printStackTrace();
             }

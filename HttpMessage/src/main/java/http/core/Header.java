@@ -20,17 +20,15 @@ public class Header {
     /**
      * 解析报文首部输入流构建Header实例
      *
-     * @param headersStream 首部输入流
+     * @param br 首部输入流
      */
-    Header(InputStream headersStream) {
+    Header(BufferedReader br) {
         this();
-        BufferedReader br = new BufferedReader(new InputStreamReader(headersStream));
-
         try {
             String line;
             while (!(line = br.readLine()).isEmpty()) {
-                String[] splits = line.split(":");
-                this.setProperty(splits[0], splits[1]);
+                int splitIndex = line.indexOf(":");
+                this.setProperty(line.substring(0, splitIndex).trim(), line.substring(splitIndex + 1).trim());
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -133,7 +133,7 @@ public class HttpResponse {
     public void setResponseBody(InputStream responseBody) throws Exception {
         this.responseBody = new HttpBody(
                 this.header.getProperty(ResponseHeader.CONTENT_TYPE),
-                responseBody
+                new BufferedReader(new InputStreamReader(responseBody))
         );
     }
 
@@ -174,20 +174,13 @@ public class HttpResponse {
         }
 
         // 解析响应报文首部
-        this.header = new Header(responseInputStream);
-
-        // 查看是否有实体部分
-        try {
-            if (responseInputStream.available() == 0) return;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.header = new Header(br);
 
         // 解析响应报文实体部分
         try {
             this.responseBody = new HttpBody(
                     this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                    responseInputStream
+                    br
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -217,7 +210,7 @@ public class HttpResponse {
         if (this.responseBody != null){
             InputStream is = responseBody.getContent();
             try {
-                InputOutputTransform.InputStream2OutputStream(is, outputStream);
+                InputOutputTransform.inputStream2OutputStream(is, outputStream);
             } catch (IOException e) {
                 e.printStackTrace();
             }
