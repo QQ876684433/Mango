@@ -16,7 +16,7 @@ public final class HttpStatus {
     public static final int CODE_404 = 405;
     public static final int CODE_500 = 500;
 
-    static final Map<Integer, String> MESSAGE= new HashMap<Integer, String>();
+    public static final Map<Integer, String> MESSAGE= new HashMap<Integer, String>();
 
     // 初始化状态码对应的消息
     static {

@@ -6,6 +6,6 @@ package http.util;
  * @author steve
  */
 public final class HttpVersion {
-    public static final int HTTP_VERSION_1_0 = 0;
-    public static final int HTTP_VERSION_1_1 = 1;
+    public static final String HTTP_VERSION_1_0 = "HTTP/1.0";
+    public static final String HTTP_VERSION_1_1 = "HTTP/1.1";
 }
