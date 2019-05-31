@@ -3,3 +3,5 @@
 /HttpMessage/target
 /MangoUI/.idea
 /MangoUI/target
+
+.DS_Store
