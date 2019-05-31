@@ -9,6 +9,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * HTTP请求报文类
@@ -120,7 +121,7 @@ public class HttpRequest {
 
         this.requestBody = new HttpBody(
                 this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                new BufferedReader(new InputStreamReader(requestBody))
+                requestBody
         );
     }
 
@@ -151,13 +152,15 @@ public class HttpRequest {
      * @param requestInputStream 请求报文输入流
      */
     private void parse(InputStream requestInputStream) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(requestInputStream));
-        String line;
+        int buffer;
 
         // 解析请求报文起始行
         try {
-            line = br.readLine();
-            String[] splits = line.split(" ");
+            byte[] bf = new byte[requestInputStream.available()];
+            int pointer = 0;
+            while ((buffer = requestInputStream.read()) != '\n')
+                bf[pointer++] = (byte) buffer;
+            String[] splits = new String(bf, Charset.defaultCharset()).trim().split(" ");
             this.setMethod(splits[0]);
             this.setUrl(splits[1]);
             this.setVersion(splits[2]);
@@ -166,14 +169,14 @@ public class HttpRequest {
         }
 
         // 解析请求报文首部
-        this.header = new Header(br);
+        this.header = new Header(requestInputStream);
 
         // 解析请求报文实体部分（GET请求不解析实体部分）
         if (!this.getMethod().equalsIgnoreCase(HttpMethod.GET))
             try {
                 this.requestBody = new HttpBody(
                         this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                        br
+                        requestInputStream
                 );
             } catch (Exception e) {
                 e.printStackTrace();

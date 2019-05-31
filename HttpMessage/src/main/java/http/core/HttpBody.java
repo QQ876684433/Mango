@@ -1,6 +1,5 @@
 package http.core;
 
-import http.util.io.InputOutputTransform;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,11 +35,11 @@ public class HttpBody {
         this.content = new ByteArrayInputStream(content.getBytes(this.mediaType.getCharset()));
     }
 
-    HttpBody(String contentType, BufferedReader content) throws Exception {
+    HttpBody(String contentType, InputStream content) throws Exception {
         if (contentType.isEmpty()) throw new Exception("contentType不能为空！");
 
         this.mediaType = new MediaType(contentType);
-        this.content = InputOutputTransform.bufferedReader2InputStream(content);
+        this.content = content;
     }
 
     /**
@@ -49,6 +48,16 @@ public class HttpBody {
      * @return HTTP报文实体文本内容
      */
     String getTextContent() {
-        return this.content.toString();
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(this.content));
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
     }
 }
