@@ -120,7 +120,7 @@ public class HttpRequest {
 
         this.requestBody = new HttpBody(
                 this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                requestBody
+                new BufferedReader(new InputStreamReader(requestBody))
         );
     }
 
@@ -161,33 +161,23 @@ public class HttpRequest {
             this.setMethod(splits[0]);
             this.setUrl(splits[1]);
             this.setVersion(splits[2]);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // 解析请求报文首部
-        this.header = new Header(requestInputStream);
+        this.header = new Header(br);
 
-        // 查看是否有实体部分
-        try {
-            if (requestInputStream.available() == 0) return;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // 解析请求报文实体部分
-        try {
-            this.requestBody = new HttpBody(
-                    this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                    requestInputStream
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // 解析请求报文实体部分（GET请求不解析实体部分）
+        if (!this.getMethod().equalsIgnoreCase(HttpMethod.GET))
+            try {
+                this.requestBody = new HttpBody(
+                        this.header.getProperty(RequestHeader.CONTENT_TYPE),
+                        br
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     /**
@@ -204,17 +194,17 @@ public class HttpRequest {
         pw.println(this.getVersion());
 
         // 输出请求首部
-        String headers = this.getHeader().getHeaderText();
+        String headers = this.getHeader().getHeaderText(this.requestBody.getMediaType().getCharset());
         pw.println(headers);
 
         // 输出空行
         pw.println();
 
         // 处理请求实体
-        if (this.requestBody != null){
+        if (this.requestBody != null) {
             InputStream is = requestBody.getContent();
             try {
-                InputOutputTransform.InputStream2OutputStream(is, outputStream);
+                InputOutputTransform.inputStream2OutputStream(is, outputStream);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -228,7 +218,8 @@ public class HttpRequest {
      */
     @Override
     public String toString() {
-        // todo
-        return super.toString();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        this.writeTo(os);
+        return os.toString();
     }
 }

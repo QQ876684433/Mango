@@ -4,12 +4,12 @@ import com.sun.istack.internal.Nullable;
 import http.util.HttpStatus;
 import http.util.header.RequestHeader;
 import http.util.header.ResponseHeader;
+import http.util.io.InputOutputTransform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * HTTP响应报文类
@@ -25,7 +25,7 @@ public class HttpResponse {
     @Getter
     @Setter
     @NonNull
-    private int version;
+    private String version;
 
     /**
      * http响应状态码
@@ -133,7 +133,7 @@ public class HttpResponse {
     public void setResponseBody(InputStream responseBody) throws Exception {
         this.responseBody = new HttpBody(
                 this.header.getProperty(ResponseHeader.CONTENT_TYPE),
-                responseBody
+                new BufferedReader(new InputStreamReader(responseBody))
         );
     }
 
@@ -160,7 +160,31 @@ public class HttpResponse {
      * @param responseInputStream Http响应报文输入流
      */
     private void parse(InputStream responseInputStream){
+        BufferedReader br = new BufferedReader(new InputStreamReader(responseInputStream));
+        String line;
 
+        // 解析响应报文起始行
+        try {
+            line = br.readLine();
+            String[] splits = line.split(" ");
+            this.setVersion(splits[0]);
+            this.setStatus(Integer.parseInt(splits[1]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 解析响应报文首部
+        this.header = new Header(br);
+
+        // 解析响应报文实体部分
+        try {
+            this.responseBody = new HttpBody(
+                    this.header.getProperty(RequestHeader.CONTENT_TYPE),
+                    br
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -168,7 +192,29 @@ public class HttpResponse {
      * @param outputStream 目的输出流
      */
     public void writeTo(OutputStream outputStream){
+        PrintWriter pw = new PrintWriter(outputStream);
 
+        // 输出请求报文起始行
+        pw.print(this.getVersion() + " ");
+        pw.print(this.getStatus() + " ");
+        pw.println(this.getMessage());
+
+        // 输出请求首部
+        String headers = this.getHeader().getHeaderText(this.responseBody.getMediaType().getCharset());
+        pw.println(headers);
+
+        // 输出空行
+        pw.println();
+
+        // 处理请求实体
+        if (this.responseBody != null){
+            InputStream is = responseBody.getContent();
+            try {
+                InputOutputTransform.inputStream2OutputStream(is, outputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -177,6 +223,8 @@ public class HttpResponse {
      */
     @Override
     public String toString() {
-        return super.toString();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        this.writeTo(os);
+        return os.toString();
     }
 }

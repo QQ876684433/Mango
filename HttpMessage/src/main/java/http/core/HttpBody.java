@@ -36,11 +36,11 @@ public class HttpBody {
         this.content = new ByteArrayInputStream(content.getBytes(this.mediaType.getCharset()));
     }
 
-    HttpBody(String contentType, InputStream content) throws Exception {
+    HttpBody(String contentType, BufferedReader content) throws Exception {
         if (contentType.isEmpty()) throw new Exception("contentType不能为空！");
 
         this.mediaType = new MediaType(contentType);
-        this.content = content;
+        this.content = InputOutputTransform.bufferedReader2InputStream(content);
     }
 
     /**
