@@ -1,8 +1,6 @@
 package http.core;
 
-import http.util.io.InputOutputTransform;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.*;
 
@@ -21,9 +19,7 @@ public class HttpBody {
     /**
      * 实体部分
      */
-    @Getter
-    @Setter
-    private InputStream content;
+    private byte[] content;
 
     HttpBody(String contentType) throws Exception {
         this(contentType, "");
@@ -33,14 +29,42 @@ public class HttpBody {
         if (contentType.isEmpty()) throw new Exception("contentType不能为空！");
 
         this.mediaType = new MediaType(contentType);
-        this.content = new ByteArrayInputStream(content.getBytes(this.mediaType.getCharset()));
+        this.setContent(new ByteArrayInputStream(content.getBytes(this.mediaType.getCharset())));
     }
 
-    HttpBody(String contentType, BufferedReader content) throws Exception {
+    HttpBody(String contentType, InputStream content) throws Exception {
         if (contentType.isEmpty()) throw new Exception("contentType不能为空！");
 
         this.mediaType = new MediaType(contentType);
-        this.content = InputOutputTransform.bufferedReader2InputStream(content);
+        this.setContent(content);
+    }
+
+    /**
+     * 获取输出流的拷贝
+     *
+     * @return 输出流
+     */
+    public InputStream getContent() {
+        return new ByteArrayInputStream(this.content);
+    }
+
+    /**
+     * 设置实体内容，将输入流转换为byte数组以便复用
+     *
+     * @param is
+     */
+    void setContent(InputStream is) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = -1;
+        try {
+            while ((len = is.read(buffer)) != -1) {
+                output.write(buffer, 0, len);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        this.content = output.toByteArray();
     }
 
     /**
@@ -49,6 +73,17 @@ public class HttpBody {
      * @return HTTP报文实体文本内容
      */
     String getTextContent() {
-        return this.content.toString();
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(this.getContent()));
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+                sb.append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
     }
 }

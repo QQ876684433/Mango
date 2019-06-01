@@ -20,15 +20,34 @@ public class Header {
     /**
      * 解析报文首部输入流构建Header实例
      *
-     * @param br 首部输入流
+     * @param is 首部输入流
      */
-    Header(BufferedReader br) {
+    Header(InputStream is) {
         this();
+
+        int buffer;
+        byte[] bf;
         try {
-            String line;
-            while (!(line = br.readLine()).isEmpty()) {
-                int splitIndex = line.indexOf(":");
-                this.setProperty(line.substring(0, splitIndex).trim(), line.substring(splitIndex + 1).trim());
+            bf = new byte[is.available()];
+            int pointer = 0;
+            // 记录是否读取到首部结束的标志位，即'\n'连续出现两次说明首部已经读取完成
+            boolean isEndOfLine = false;
+            while (true) {
+                buffer = is.read();
+                if (buffer == '\n') {
+                    if (isEndOfLine) break;
+                    isEndOfLine = true;
+
+                    String line = new String(bf, Charset.defaultCharset());
+                    int splitIndex = line.indexOf(":");
+                    this.setProperty(line.substring(0, splitIndex).trim(), line.substring(splitIndex + 1).trim());
+
+                    bf = new byte[is.available()];
+                    pointer = 0;
+                } else {
+                    isEndOfLine = false;
+                    bf[pointer++] = (byte) buffer;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

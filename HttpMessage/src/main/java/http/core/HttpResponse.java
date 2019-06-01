@@ -4,12 +4,12 @@ import com.sun.istack.internal.Nullable;
 import http.util.HttpStatus;
 import http.util.header.RequestHeader;
 import http.util.header.ResponseHeader;
-import http.util.io.InputOutputTransform;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * HTTP响应报文类
@@ -133,7 +133,7 @@ public class HttpResponse {
     public void setResponseBody(InputStream responseBody) throws Exception {
         this.responseBody = new HttpBody(
                 this.header.getProperty(ResponseHeader.CONTENT_TYPE),
-                new BufferedReader(new InputStreamReader(responseBody))
+                responseBody
         );
     }
 
@@ -160,27 +160,29 @@ public class HttpResponse {
      * @param responseInputStream Http响应报文输入流
      */
     private void parse(InputStream responseInputStream){
-        BufferedReader br = new BufferedReader(new InputStreamReader(responseInputStream));
-        String line;
-
         // 解析响应报文起始行
+        int buffer;
+
         try {
-            line = br.readLine();
-            String[] splits = line.split(" ");
+            byte[] bf = new byte[responseInputStream.available()];
+            int pointer = 0;
+            while ((buffer = responseInputStream.read()) != '\n')
+                bf[pointer++] = (byte) buffer;
+            String[] splits = new String(bf, Charset.defaultCharset()).split(" ");
             this.setVersion(splits[0]);
             this.setStatus(Integer.parseInt(splits[1]));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         // 解析响应报文首部
-        this.header = new Header(br);
+        this.header = new Header(responseInputStream);
 
         // 解析响应报文实体部分
         try {
             this.responseBody = new HttpBody(
                     this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                    br
+                    responseInputStream
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,13 +210,10 @@ public class HttpResponse {
 
         // 处理请求实体
         if (this.responseBody != null){
-            InputStream is = responseBody.getContent();
-            try {
-                InputOutputTransform.inputStream2OutputStream(is, outputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            pw.print(this.getResponseBodyText());
         }
+
+        pw.flush();
     }
 
     /**

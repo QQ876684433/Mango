@@ -18,7 +18,7 @@ public class HttpRequestTest {
     @Before
     @Test
     public void setUp() throws Exception {
-        String request = "GET /search?hl=zh-CN&source=hp&q=domety&aq=f&oq= HTTP/1.1  \n" +
+        String request = "POST /search?hl=zh-CN&source=hp&q=domety&aq=f&oq= HTTP/1.1  \n" +
                 "Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/vnd.ms-excel, application/vnd.ms-powerpoint, " +
                 "application/msword, application/x-silverlight, application/x-shockwave-flash, */*  \n" +
                 "Referer: <a href=\"http://www.google.cn/\">http://www.google.cn/</a>  \n" +
@@ -30,12 +30,13 @@ public class HttpRequestTest {
                 "Connection: Keep-Alive  \n" +
                 "Cookie: PREF=ID=80a06da87be9ae3c:U=f7167333e2c3b714:NW=1:TM=1261551909:LM=1261551917:S=ybYcq2wpfefs4V9g; " +
                 "NID=31=ojj8d-IygaEtSxLgaJmqSjVhCspkviJrB6omjamNrSm8lZhKy_yMfO2M4QMRKcH1g0iQv9u-2hfBW7bUFwVh7pGaRUb0RnHcJU37y-" +
-                "FxlRugatx63JLv7CWMD6UB_O_r  \n\n";
+                "FxlRugatx63JLv7CWMD6UB_O_r  \n\nasjfaoijfdaoijfd";
         InputStream is = new ByteArrayInputStream(request.getBytes());
         httpRequest = new HttpRequest(is);
-        Assert.assertEquals(HttpMethod.GET, httpRequest.getMethod());
+        Assert.assertEquals(HttpMethod.POST, httpRequest.getMethod());
         Assert.assertEquals("/search?hl=zh-CN&source=hp&q=domety&aq=f&oq=", httpRequest.getUrl());
         Assert.assertEquals("HTTP/1.1", httpRequest.getVersion());
+        Assert.assertEquals("asjfaoijfdaoijfd", httpRequest.getRequestBodyText());
     }
 
     @After
