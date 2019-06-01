@@ -61,7 +61,7 @@ public class HttpBody {
             while ((len = is.read(buffer)) != -1) {
                 output.write(buffer, 0, len);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         this.content = output.toByteArray();

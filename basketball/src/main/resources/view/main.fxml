@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="545.0"
+            prefWidth="889.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.MainController">
+    <children>
+        <ChoiceBox fx:id="methodBox" layoutX="35.0" layoutY="38.0" prefHeight="41.0" prefWidth="88.0" value="GET">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="GET"/>
+                    <String fx:value="POST"/>
+                    <String fx:value="PUT"/>
+                    <String fx:value="DELETE"/>
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <TextField fx:id="urlTf" layoutX="123.0" layoutY="38.0" prefHeight="41.0" prefWidth="599.0" promptText="url"/>
+        <Button fx:id="sendButton" layoutX="751.0" layoutY="38.0" mnemonicParsing="false" onAction="#sendRequest"
+                prefHeight="41.0" prefWidth="76.0" text="Send"/>
+        <TabPane layoutX="35.0" layoutY="106.0" prefHeight="404.0" prefWidth="816.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab closable="false" text="Params">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="376.0" prefWidth="816.0">
+                            <children>
+                                <TableView fx:id="paramTable" editable="true" layoutY="31.0" prefHeight="243.0"
+                                           prefWidth="816.0">
+                                    <columns>
+                                        <TableColumn fx:id="paramKeyColumn" prefWidth="75.0" text="Key"/>
+                                        <TableColumn fx:id="paramValueColumn" prefWidth="75.0" text="Value"/>
+                                        <TableColumn fx:id="paramDescColumn" prefWidth="132.0" text="Description"/>
+                                    </columns>
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    </columnResizePolicy>
+                                </TableView>
+                                <Label layoutX="2.0" layoutY="1.0" prefHeight="27.0" prefWidth="106.0"
+                                       text="Query Params"/>
+                                <Button fx:id="paramAddBtn" layoutX="249.0" layoutY="293.0" mnemonicParsing="false"
+                                        onAction="#onParamAdd" prefHeight="41.0" prefWidth="95.0" text="Add Row"/>
+                                <Button fx:id="paramDeleteBtn" disable="true" layoutX="460.0" layoutY="293.0"
+                                        mnemonicParsing="false" onAction="#onParamDelete" prefHeight="41.0"
+                                        prefWidth="106.0" text="Delete Row"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab closable="false" text="Headers">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <TableView fx:id="headerTable" editable="true" layoutY="31.0" prefHeight="243.0"
+                                           prefWidth="816.0">
+                                    <columns>
+                                        <TableColumn fx:id="headerKeyColumn" prefWidth="75.0" text="Key"/>
+                                        <TableColumn fx:id="headerValueColumn" prefWidth="75.0" text="Value"/>
+                                        <TableColumn fx:id="headerDescColumn" prefWidth="132.0" text="Description"/>
+                                    </columns>
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    </columnResizePolicy>
+                                </TableView>
+                                <Label layoutX="2.0" layoutY="1.0" prefHeight="27.0" prefWidth="106.0"
+                                       text="Headers(0)"/>
+                                <Button fx:id="headerAddBtn" layoutX="249.0" layoutY="293.0" mnemonicParsing="false"
+                                        onAction="#onHeaderAdd" prefHeight="41.0" prefWidth="95.0" text="Add Row"/>
+                                <Button fx:id="headerDeleteBtn" disable="true" layoutX="460.0" layoutY="293.0"
+                                        mnemonicParsing="false" onAction="#onHeaderDelete" prefHeight="41.0"
+                                        prefWidth="106.0" text="Delete Row"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="bodyTab" text="Body">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <RadioButton layoutX="28.0" layoutY="10.0" mnemonicParsing="false" text="none">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="tg1"/>
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton layoutX="99.0" layoutY="10.0" mnemonicParsing="false" text="form-data"
+                                             toggleGroup="$tg1"/>
+                                <RadioButton layoutX="204.0" layoutY="10.0" mnemonicParsing="false"
+                                             text="x-www-form-urlencoded" toggleGroup="$tg1"/>
+                                <RadioButton layoutX="417.0" layoutY="10.0" mnemonicParsing="false" text="raw"
+                                             toggleGroup="$tg1"/>
+                                <RadioButton layoutX="477.0" layoutY="10.0" mnemonicParsing="false" text="binary"
+                                             toggleGroup="$tg1"/>
+                                <AnchorPane>
+
+                                </AnchorPane>
+                                <Button layoutX="48.0" layoutY="46.0" mnemonicParsing="false" prefHeight="30.0"
+                                        prefWidth="99.0" text="select file"/>
+                                <TextField layoutX="176.0" layoutY="46.0" prefHeight="30.0" prefWidth="494.0"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>

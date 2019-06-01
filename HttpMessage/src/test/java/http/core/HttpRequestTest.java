@@ -1,7 +1,6 @@
 package http.core;
 
 import http.util.HttpMethod;
-import http.util.header.RequestHeader;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,8 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-
-import static org.junit.Assert.*;
 
 public class HttpRequestTest {
     private HttpRequest httpRequest;

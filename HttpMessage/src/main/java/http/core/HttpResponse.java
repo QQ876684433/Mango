@@ -8,7 +8,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 
 /**
@@ -209,7 +212,7 @@ public class HttpResponse {
         pw.println();
 
         // 处理请求实体
-        if (this.responseBody != null){
+        if (this.responseBody != null) {
             pw.print(this.getResponseBodyText());
         }
 
