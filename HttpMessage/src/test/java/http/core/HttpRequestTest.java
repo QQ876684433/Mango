@@ -76,11 +76,17 @@ public class HttpRequestTest {
 
     @Test
     public void setRequestBody() {
-
+        try {
+            httpRequest.setRequestBody("qwertyuiop\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Assert.assertEquals("qwertyuiop\n", httpRequest.getRequestBodyText());
     }
 
     @Test
     public void setRequestBody1() {
+
     }
 
     @Test

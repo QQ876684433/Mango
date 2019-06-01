@@ -1,4 +1,4 @@
-package java.core;
+package core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class HttpServer {
-    private static final Integer port = 80;//HTTP默认端口80
+    private static final Integer port = 8080;//HTTP默认端口80
 
     public static void main(String[] args) {
         ServerSocket serverSocket;
