@@ -43,6 +43,9 @@ public class Header {
 
                     String line = new String(bf, Charset.defaultCharset());
                     int splitIndex = line.indexOf(":");
+
+                    // 当读取到无效Header项(即不包含':'符号)时，则退出首部解析
+                    if (splitIndex == -1) break;
                     this.setProperty(line.substring(0, splitIndex).trim(), line.substring(splitIndex + 1).trim());
 
                     bf = new byte[is.available()];
