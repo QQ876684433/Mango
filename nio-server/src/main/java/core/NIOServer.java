@@ -23,7 +23,7 @@ public class NIOServer {
             try {
                 // 对应IO编程中服务端启动
                 ServerSocketChannel listenerChannel = ServerSocketChannel.open();
-                listenerChannel.socket().bind(new InetSocketAddress(80));
+                listenerChannel.socket().bind(new InetSocketAddress(8080));
                 listenerChannel.configureBlocking(false);
                 listenerChannel.register(serverSelector, SelectionKey.OP_ACCEPT);
 
