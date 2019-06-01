@@ -42,9 +42,6 @@ public class NIOServer {
                                     SocketChannel clientChannel = ((ServerSocketChannel) key.channel()).accept();
                                     clientChannel.configureBlocking(false);
                                     clientChannel.register(clientSelector, SelectionKey.OP_READ);
-
-                                    clientChannel.register(clientSelector, SelectionKey.OP_WRITE);
-
                                 } finally {
                                     keyIterator.remove();
                                 }
@@ -78,14 +75,17 @@ public class NIOServer {
                                     clientChannel.read(byteBuffer);
                                     byteBuffer.flip();
 
-                                    HttpRequest httpRequest = new HttpRequest(new ByteArrayInputStream(byteBuffer.array()));
                                     System.out.println(Charset.defaultCharset().newDecoder().decode(byteBuffer)
                                             .toString());
 
+                                    HttpRequest httpRequest = new HttpRequest(new ByteArrayInputStream(byteBuffer.array()));
                                     System.out.println(httpRequest.getHeader());
                                     System.out.println(httpRequest.getMethod());
                                     System.out.println(httpRequest.getRequestBodyText());
-                                    byteBuffer.clear();
+
+                                    clientChannel.register(clientSelector, SelectionKey.OP_WRITE);
+                                } catch (NullPointerException e){
+                                    e.printStackTrace();
                                 } finally {
                                     keyIterator.remove();
                                     key.interestOps(SelectionKey.OP_READ);
@@ -96,6 +96,7 @@ public class NIOServer {
                                 try {
                                     SocketChannel clientChannel = (SocketChannel) key.channel();
                                     ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                                    byteBuffer.clear();
                                     // (3) 读取数据以块为单位批量读取
                                     clientChannel.write(byteBuffer.put("xxx".getBytes()));
                                 } finally {
