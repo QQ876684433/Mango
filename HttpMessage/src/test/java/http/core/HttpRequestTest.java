@@ -1,6 +1,7 @@
 package http.core;
 
 import http.util.HttpMethod;
+import http.util.header.RequestHeader;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
