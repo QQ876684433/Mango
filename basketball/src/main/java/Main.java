@@ -1,5 +1,3 @@
-package ui;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import ui.model.ParamTuple;
+import model.ParamTuple;
 
 public class Main extends Application {
 
@@ -18,21 +16,22 @@ public class Main extends Application {
     }
 
     public ObservableList<ParamTuple> getInitParamTuples() {
-        return initParamTuples;
+        ObservableList<ParamTuple> res = FXCollections.observableArrayList(initParamTuples);
+        return res;
     }
 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("/main.fxml"));
+        FXMLLoader mainLoader = new FXMLLoader();
+        mainLoader.setLocation(Main.class.getResource("view/main.fxml"));
 
-        Parent root = loader.load();
+        Parent root = mainLoader.load();
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 900, 550));
 
-        MainController controller = loader.getController();
-        controller.setMain(this);
+//        MainController controller = mainLoader.getController();
+//        controller.setMain(this);
 
         primaryStage.show();
     }

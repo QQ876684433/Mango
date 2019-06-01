@@ -1,10 +1,10 @@
-package ui.model;
+package model;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 /**
- * 参数类
+ * 参数类，对应table中的每一行
  *
  * @author Nosolution
  * @version 1.0
