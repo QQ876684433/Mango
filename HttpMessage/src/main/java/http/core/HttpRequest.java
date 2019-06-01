@@ -9,6 +9,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * HTTP请求报文类
@@ -151,20 +152,18 @@ public class HttpRequest {
      * @param requestInputStream 请求报文输入流
      */
     private void parse(InputStream requestInputStream) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(requestInputStream));
-        String line;
+        int buffer;
 
         // 解析请求报文起始行
         try {
-            line = br.readLine();
-            String[] splits = line.split(" ");
+            byte[] bf = new byte[requestInputStream.available()];
+            int pointer = 0;
+            while ((buffer = requestInputStream.read()) != '\n')
+                bf[pointer++] = (byte) buffer;
+            String[] splits = new String(bf, Charset.defaultCharset()).trim().split(" ");
             this.setMethod(splits[0]);
             this.setUrl(splits[1]);
             this.setVersion(splits[2]);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,22 +171,16 @@ public class HttpRequest {
         // 解析请求报文首部
         this.header = new Header(requestInputStream);
 
-        // 查看是否有实体部分
-        try {
-            if (requestInputStream.available() == 0) return;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // 解析请求报文实体部分
-        try {
-            this.requestBody = new HttpBody(
-                    this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                    requestInputStream
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // 解析请求报文实体部分（GET请求不解析实体部分）
+        if (!this.getMethod().equalsIgnoreCase(HttpMethod.GET))
+            try {
+                this.requestBody = new HttpBody(
+                        this.header.getProperty(RequestHeader.CONTENT_TYPE),
+                        requestInputStream
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     /**
@@ -204,17 +197,17 @@ public class HttpRequest {
         pw.println(this.getVersion());
 
         // 输出请求首部
-        String headers = this.getHeader().getHeaderText();
+        String headers = this.getHeader().getHeaderText(this.requestBody.getMediaType().getCharset());
         pw.println(headers);
 
         // 输出空行
         pw.println();
 
         // 处理请求实体
-        if (this.requestBody != null){
+        if (this.requestBody != null) {
             InputStream is = requestBody.getContent();
             try {
-                InputOutputTransform.InputStream2OutputStream(is, outputStream);
+                InputOutputTransform.inputStream2OutputStream(is, outputStream);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -228,7 +221,8 @@ public class HttpRequest {
      */
     @Override
     public String toString() {
-        // todo
-        return super.toString();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        this.writeTo(os);
+        return os.toString();
     }
 }

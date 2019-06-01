@@ -39,7 +39,7 @@ class MediaType {
         String[] split = type.split(";");
 
         if (split.length >= 2)
-            charset = Charset.forName(split[1]);
+            charset = Charset.forName(split[1].split("=")[1]);
 
         if (split[0].isEmpty()) throw new Exception("MediaType类型无效！");
         String[] types = split[0].split("/");
