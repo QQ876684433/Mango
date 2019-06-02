@@ -19,10 +19,10 @@ public class Prompt {
 
     public static void display(String title, String message) {
         Stage window = new Stage();
-        window.initModality(Modality.APPLICATION_MODAL); //
+        window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(title);
-        window.setMinWidth(350);
-        window.setMinHeight(240);
+        window.setMinWidth(430);
+        window.setMinHeight(300);
 
         Label promptLb = new Label();
         promptLb.setText(message);

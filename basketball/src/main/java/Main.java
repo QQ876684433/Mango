@@ -24,14 +24,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader mainLoader = new FXMLLoader();
-        mainLoader.setLocation(Main.class.getResource("view/main.fxml"));
+        mainLoader.setLocation(Main.class.getResource("view/request_view.fxml"));
 
         Parent root = mainLoader.load();
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Request");
         primaryStage.setScene(new Scene(root, 900, 550));
-
-//        MainController controller = mainLoader.getController();
-//        controller.setMain(this);
 
         primaryStage.show();
     }

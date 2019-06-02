@@ -2,7 +2,10 @@ package controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import model.ParamTuple;
 import view.Prompt;
 
@@ -11,15 +14,15 @@ import java.io.IOException;
 import static util.ParamTupleTableHelper.*;
 
 /**
- * 主视图的控制器
+ * 请求视图的控制器类
  *
  * @author Nosolution
  * @version 1.0
  * @since 2019/5/25
  */
-public class MainController {
+public class RequestViewController {
     @FXML
-    private ChoiceBox methodBox;
+    private ChoiceBox<String> methodBox;
 
     @FXML
     private Button sendButton;
@@ -93,14 +96,28 @@ public class MainController {
             e.printStackTrace();
         }
 
+        methodBox.getSelectionModel().selectFirst();
+
     }
 
 
     @FXML
     private void sendRequest() {
-        if (urlTf.getText().length() != 0)
+        if (urlTf.getText().length() != 0) {
             Prompt.display("已发送请求", "url: " + urlTf.getText());
-        else
+            Stage responseStage = new Stage();
+            responseStage.setTitle("Response");
+            FXMLLoader responseViewLoader = new FXMLLoader();
+            responseViewLoader.setLocation(this.getClass().getResource("/view/response_view.fxml"));
+            try {
+                Parent responseViewRoot = responseViewLoader.load();
+                responseStage.setScene(new Scene(responseViewRoot, 850, 500));
+                responseStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else
             Prompt.display("错误", "请填写url");
     }
 

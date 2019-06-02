@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * body_tab的视图控制器
+ * body_tab视图的控制器类
  *
  * @author Nosolution
  * @version 1.0
@@ -37,6 +37,8 @@ public class BodyTabController {
     @FXML
     private RadioButton binaryBtn;
     @FXML
+    private ChoiceBox<String> rawType;
+    @FXML
     private AnchorPane contentPane;
 
     @FXML
@@ -45,24 +47,37 @@ public class BodyTabController {
         onSelectNone();
 
         noneBtn.setOnAction(event -> {
+            rawType.setVisible(false);
             onSelectNone();
         });
 
         urlEncodedBtn.setOnAction(event -> {
+            rawType.setVisible(false);
             initMapTable();
         });
 
         formDataBtn.setOnAction(event -> {
+            rawType.setVisible(false);
             initMapTable();
         });
 
         rawBtn.setOnAction(event -> {
+            rawType.setVisible(true);
             onSelectRaw();
         });
 
         binaryBtn.setOnAction(event -> {
+            rawType.setVisible(false);
             onSelectBinary();
         });
+
+        rawType.getSelectionModel().selectFirst();
+        //设置按键的长度根据字长动态变换
+        rawType.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            double width = newValue.length() < 5 ? 65 : (newValue.length() < 30 ? newValue.length() * 10 : newValue.length() * 8);
+            rawType.setPrefWidth(width);
+        });
+
     }
 
 

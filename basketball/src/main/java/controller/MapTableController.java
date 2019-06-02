@@ -14,7 +14,7 @@ import static util.ParamTupleTableHelper.combineRowWithDeleteBtn;
 import static util.ParamTupleTableHelper.initParameterTable;
 
 /**
- * map_table对应的controller类
+ * map_table视图的控制器类
  *
  * @author Nosolution
  * @version 1.0

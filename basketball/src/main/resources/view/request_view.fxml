@@ -6,9 +6,9 @@
 <?import java.lang.String?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="545.0"
             prefWidth="889.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.MainController">
+            fx:controller="controller.RequestViewController">
     <children>
-        <ChoiceBox fx:id="methodBox" layoutX="35.0" layoutY="38.0" prefHeight="41.0" prefWidth="88.0" value="GET">
+        <ChoiceBox fx:id="methodBox" layoutX="35.0" layoutY="38.0" prefHeight="41.0" prefWidth="88.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="GET"/>
