@@ -32,7 +32,7 @@ public class Prompt {
                 window.close()
         );
 
-        VBox layout = new VBox(30);
+        VBox layout = new VBox(50);
         layout.getChildren().addAll(promptLb, confirmBt);
         layout.setAlignment(Pos.CENTER);
 

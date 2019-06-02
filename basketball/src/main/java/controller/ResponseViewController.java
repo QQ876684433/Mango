@@ -43,15 +43,15 @@ public class ResponseViewController {
 
     }
 
-    private void setStatus(ParamTuple... items) {
+    public void setStatus(ParamTuple... items) {
         statusTable.setItems(ParamTupleTableHelper.packagePT(items));
     }
 
-    private void setHeaders(ParamTuple... items) {
+    public void setHeaders(ParamTuple... items) {
         headersTable.setItems(ParamTupleTableHelper.packagePT(items));
     }
 
-    private void setContent(String contentType, byte[] content) {
+    public void setContent(String contentType, byte[] content) {
         //TODO 待实现，需考虑文本、文件、流媒体此三种情况
     }
 
