@@ -8,8 +8,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
 
 /**
  * HTTP响应报文类
@@ -25,7 +28,7 @@ public class HttpResponse {
     @Getter
     @Setter
     @NonNull
-    private int version;
+    private String version;
 
     /**
      * http响应状态码
@@ -160,7 +163,33 @@ public class HttpResponse {
      * @param responseInputStream Http响应报文输入流
      */
     private void parse(InputStream responseInputStream){
+        // 解析响应报文起始行
+        int buffer;
 
+        try {
+            byte[] bf = new byte[responseInputStream.available()];
+            int pointer = 0;
+            while ((buffer = responseInputStream.read()) != '\n')
+                bf[pointer++] = (byte) buffer;
+            String[] splits = new String(bf, Charset.defaultCharset()).split(" ");
+            this.setVersion(splits[0]);
+            this.setStatus(Integer.parseInt(splits[1]));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 解析响应报文首部
+        this.header = new Header(responseInputStream);
+
+        // 解析响应报文实体部分
+        try {
+            this.responseBody = new HttpBody(
+                    this.header.getProperty(RequestHeader.CONTENT_TYPE),
+                    responseInputStream
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -168,7 +197,26 @@ public class HttpResponse {
      * @param outputStream 目的输出流
      */
     public void writeTo(OutputStream outputStream){
+        PrintWriter pw = new PrintWriter(outputStream);
 
+        // 输出请求报文起始行
+        pw.print(this.getVersion() + " ");
+        pw.print(this.getStatus() + " ");
+        pw.println(this.getMessage());
+
+        // 输出请求首部
+        String headers = this.getHeader().getHeaderText(this.responseBody.getMediaType().getCharset());
+        pw.println(headers);
+
+        // 输出空行
+        pw.println();
+
+        // 处理请求实体
+        if (this.responseBody != null) {
+            pw.print(this.getResponseBodyText());
+        }
+
+        pw.flush();
     }
 
     /**
@@ -177,6 +225,8 @@ public class HttpResponse {
      */
     @Override
     public String toString() {
-        return super.toString();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        this.writeTo(os);
+        return os.toString();
     }
 }

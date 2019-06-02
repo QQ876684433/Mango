@@ -1,8 +1,6 @@
 package http.util.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * 输入输出流的转换
@@ -17,9 +15,9 @@ public class InputOutputTransform {
      * @param is 输入流
      * @param os 输出流
      */
-    public static void InputStream2OutputStream(InputStream is, OutputStream os) throws IOException {
+    public static void inputStream2OutputStream(InputStream is, OutputStream os) throws IOException {
         byte[] buffer = new byte[1024];
-        while ((is.read(buffer)) != 0) {
+        while ((is.read(buffer)) != -1) {
             os.write(buffer);
         }
     }
@@ -27,10 +25,19 @@ public class InputOutputTransform {
     /**
      * 将输出流转为输入流
      *
-     * @param is 输入流
-     * @param os 输出流
+     * @param br 字符输入流
+     * @return 字节输入流
      */
-    public static void OutputStream2InputStream(InputStream is, OutputStream os) {
-
+    public static InputStream bufferedReader2InputStream(BufferedReader br) {
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            while (!(line = br.readLine()).isEmpty()) {
+                sb.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ByteArrayInputStream(sb.toString().getBytes());
     }
 }

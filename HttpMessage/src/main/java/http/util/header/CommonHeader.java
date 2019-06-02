@@ -8,6 +8,7 @@ package http.util.header;
 interface CommonHeader {
     // 通用的信息性首部
     String CONNECTION = "Connection";
+    String KEEP_ALIVE = "Keep-Alive";
     String DATE = "Date";
     String MINE_VERSION = "MINE-Version";
     String TRAILER = "Trailer";

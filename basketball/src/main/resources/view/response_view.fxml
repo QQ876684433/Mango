@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ResponseViewController">
+    <children>
+        <TabPane prefHeight="500.0" prefWidth="850.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="status">
+                    <content>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                            <children>
+                                <TableView fx:id="statusTable" prefHeight="460.0" prefWidth="850.0">
+                                    <columns>
+                                        <TableColumn fx:id="statusNameColumn" editable="false" prefWidth="191.0"
+                                                     text="name"/>
+                                        <TableColumn fx:id="statusValueColumn" editable="false" prefWidth="657.0"
+                                                     text="value"/>
+                                    </columns>
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    </columnResizePolicy>
+                                </TableView>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab text="Body">
+                    <content>
+                        <AnchorPane fx:id="bodyPane" minHeight="0.0" minWidth="0.0" prefHeight="277.0"
+                                    prefWidth="600.0"/>
+                    </content>
+                </Tab>
+                <Tab text="Headers">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="460.0" prefWidth="850.0">
+                            <children>
+                                <TableView fx:id="headersTable" layoutX="2.0" prefHeight="461.0" prefWidth="850.0">
+                                    <columns>
+                                        <TableColumn fx:id="headerKeyColumn" editable="false" prefWidth="191.0"
+                                                     text="key"/>
+                                        <TableColumn fx:id="headerValueColumn" editable="false" prefWidth="657.0"
+                                                     text="value"/>
+                                    </columns>
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    </columnResizePolicy>
+                                </TableView>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>

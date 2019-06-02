@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import java.lang.*?>
+<AnchorPane fx:id="rootPane" minHeight="0.0" minWidth="0.0" prefHeight="313.0" prefWidth="806.0"
+            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.BodyTabController">
+    <children>
+        <RadioButton fx:id="noneBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="none">
+            <toggleGroup>
+                <ToggleGroup fx:id="tg1"/>
+            </toggleGroup>
+        </RadioButton>
+        <RadioButton fx:id="formDataBtn" layoutX="79.0" layoutY="10.0" mnemonicParsing="false" text="form-data"
+                     toggleGroup="$tg1"/>
+        <RadioButton fx:id="urlEncodedBtn" layoutX="185.0" layoutY="10.0" mnemonicParsing="false"
+                     text="x-www-form-urlencoded" toggleGroup="$tg1"/>
+        <RadioButton fx:id="rawBtn" layoutX="395.0" layoutY="10.0" mnemonicParsing="false" text="raw"
+                     toggleGroup="$tg1"/>
+        <RadioButton fx:id="binaryBtn" layoutX="452.0" layoutY="10.0" mnemonicParsing="false" text="binary"
+                     toggleGroup="$tg1"/>
+        <AnchorPane fx:id="contentPane" layoutY="30.0" prefHeight="283.0" prefWidth="806.0"/>
+        <ChoiceBox fx:id="rawType" layoutX="531.0" layoutY="5.0" prefHeight="30.0" prefWidth="65.0" visible="false">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Text"/>
+                    <String fx:value="Text(Text/plain)"/>
+                    <String fx:value="JSON(application/json)"/>
+                    <String fx:value="Javascript(application/javascript)"/>
+                    <String fx:value="XML(application/xml)"/>
+                    <String fx:value="XML(text/xml)"/>
+                    <String fx:value="HTML(text/html)"/>
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+    </children>
+</AnchorPane>
