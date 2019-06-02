@@ -42,7 +42,7 @@ public class OkHandler implements BaseHandler {
         }
         Map<String, Object> map = new HashMap<>();
         map.put("status", HttpStatus.CODE_200);
-        map.put("file", this.fileTransformer.transform(response.getResponseBodyStream()))
+        map.put("file", this.fileTransformer.transform(response.getResponseBodyStream()));
         return map;
     }
 }

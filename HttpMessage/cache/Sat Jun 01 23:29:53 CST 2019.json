@@ -1,8 +1,0 @@
-{
-  "header": {},
-  "message": "Move Permanently",
-  "responseBodyStream": {},
-  "responseBodyText": "uri to current resource\n",
-  "status": 301,
-  "version": "HTTP/1.1"
-}

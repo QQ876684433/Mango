@@ -31,7 +31,8 @@ public class FileUtils {
             file.mkdir();
         }
         //map to file .json
-        file = new File(path + new Date().toString() + ".json");
+        String id = DateUtils.dateToStr(new Date(), "yyyyMMddHHmmss");
+        file = new File(path + id + ".json");
         if (!file.exists()) {
             boolean res = file.createNewFile();
         }
