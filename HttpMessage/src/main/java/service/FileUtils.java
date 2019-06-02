@@ -16,6 +16,10 @@ public class FileUtils {
 
     /**
      * 缓存http响应内容
+     *
+     * @param response     :http 响应
+     * @param baseLocation :缓存基路径
+     * @return :缓存的绝对地址
      */
     public static String cacheResponse(HttpResponse response, String baseLocation) throws IOException {
         File directory = new File(".");
@@ -26,7 +30,8 @@ public class FileUtils {
         if (!file.exists() && !file.isDirectory()) {
             file.mkdir();
         }
-        file = new File(path + new Date().toString()+".json");
+        //map to file .json
+        file = new File(path + new Date().toString() + ".json");
         if (!file.exists()) {
             boolean res = file.createNewFile();
         }
@@ -37,5 +42,33 @@ public class FileUtils {
         return file.getPath();
     }
 
+    /**
+     * 清空缓存内容
+     */
+    public static void cleanUpCache(String baseLocation) {
+
+    }
+
+
     //TODO: 实现不同文件 content-Type 的解析
+
+    //字节流转为字符串
+    public static String streamToString(InputStream inputStream, String charset) {
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, charset));
+            String s;
+            StringBuilder builder = new StringBuilder();
+            while ((s = bufferedReader.readLine()) != null) {
+                builder.append(s);
+            }
+
+            bufferedReader.close();
+            return builder.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

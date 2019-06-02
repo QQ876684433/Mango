@@ -13,10 +13,11 @@ public final class HttpStatus {
     public static final int CODE_301 = 301;
     public static final int CODE_302 = 302;
     public static final int CODE_304 = 304;
-    public static final int CODE_404 = 405;
+    public static final int CODE_404 = 404;
+    public static final int CODE_405 = 405;
     public static final int CODE_500 = 500;
 
-    public static final Map<Integer, String> MESSAGE= new HashMap<Integer, String>();
+    public static final Map<Integer, String> MESSAGE = new HashMap<Integer, String>();
 
     // 初始化状态码对应的消息
     static {

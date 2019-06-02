@@ -19,7 +19,7 @@ public class MethodNotAllowedHandler implements BaseHandler {
     @Override
     public Map<String, Object> handleStatus(HttpResponse response) {
         Map<String, Object> ans = new HashMap<>();
-        ans.put("status", HttpStatus.CODE_404);
+        ans.put("status", HttpStatus.CODE_405);
         ans.put("Allow", response.getHeader().getProperty("Allow"));
         //响应头
         ans.put("Response Headers", response.getHeader().getHeaderText(Charset.forName("utf-8")));
