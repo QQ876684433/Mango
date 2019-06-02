@@ -1,5 +1,6 @@
 package service.fileTrans;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -13,4 +14,5 @@ import java.io.OutputStream;
  */
 
 public interface FileTransformer {
+    Object transform(InputStream in);
 }

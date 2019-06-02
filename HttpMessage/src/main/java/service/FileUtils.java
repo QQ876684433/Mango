@@ -50,8 +50,6 @@ public class FileUtils {
     }
 
 
-    //TODO: 实现不同文件 content-Type 的解析
-
     //字节流转为字符串
     public static String streamToString(InputStream inputStream, String charset) {
         try {
