@@ -1,6 +1,7 @@
-package service.statusReceiver;
+package service;
 
 import http.core.HttpResponse;
+import service.statusReceiver.*;
 
 import java.util.Map;
 

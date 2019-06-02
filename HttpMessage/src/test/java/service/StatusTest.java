@@ -3,9 +3,6 @@ package service;
 import http.core.HttpResponse;
 import org.junit.Assert;
 import org.junit.Test;
-import service.statusReceiver.BaseHandler;
-import service.statusReceiver.MovPermHandler;
-import service.statusReceiver.StatusHandler;
 
 import java.io.*;
 import java.util.Map;

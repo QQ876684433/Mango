@@ -5,8 +5,6 @@ import http.core.HttpRequest;
 import http.core.HttpResponse;
 import http.util.HttpMethod;
 
-import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
