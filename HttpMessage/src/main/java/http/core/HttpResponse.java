@@ -8,10 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.Charset;
 
 /**
@@ -65,7 +62,7 @@ public class HttpResponse {
      * 使用输入流构建HttpResponse对象
      * @param responseInputStream 响应报文输入流
      */
-    public HttpResponse(InputStream responseInputStream){
+    public HttpResponse(InputStream responseInputStream) throws IOException {
         this();
         this.parse(responseInputStream);
     }
@@ -162,7 +159,7 @@ public class HttpResponse {
      * 解析输入流，生成HttpResponse对象
      * @param responseInputStream Http响应报文输入流
      */
-    private void parse(InputStream responseInputStream){
+    private void parse(InputStream responseInputStream) throws IOException {
         // 解析响应报文起始行
         int buffer;
 
@@ -174,8 +171,8 @@ public class HttpResponse {
             String[] splits = new String(bf, Charset.defaultCharset()).split(" ");
             this.setVersion(splits[0]);
             this.setStatus(Integer.parseInt(splits[1]));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new IOException("解析响应报文起始行出错！");
         }
 
         // 解析响应报文首部
@@ -188,7 +185,7 @@ public class HttpResponse {
                     responseInputStream
             );
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new IOException("解析响应报文实体出错！");
         }
     }
 

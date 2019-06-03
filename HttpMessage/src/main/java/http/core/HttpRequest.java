@@ -62,7 +62,7 @@ public class HttpRequest {
         header = new Header();
     }
 
-    public HttpRequest(InputStream requestInputStream) {
+    public HttpRequest(InputStream requestInputStream) throws Exception {
         this();
         this.parse(requestInputStream);
     }
@@ -151,7 +151,7 @@ public class HttpRequest {
      *
      * @param requestInputStream 请求报文输入流
      */
-    private void parse(InputStream requestInputStream) {
+    private void parse(InputStream requestInputStream) throws Exception {
         int buffer;
 
         // 解析请求报文起始行
@@ -165,7 +165,7 @@ public class HttpRequest {
             this.setUrl(splits[1]);
             this.setVersion(splits[2]);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception("解析请求报文起始行出错！");
         }
 
         // 解析请求报文首部
@@ -179,7 +179,7 @@ public class HttpRequest {
                         requestInputStream
                 );
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new Exception("解析实体部分出错！");
             }
     }
 
