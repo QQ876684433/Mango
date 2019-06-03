@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 abstract public class HttpUtils {
     private static final String CONNECTION_KEEP_ALIVE = "keep-alive";
     private static final String CONNECTION_CLOSE = "close";
-    private static final String KEEP_ALIVE_TIMEOUT = "timeout";
-    private static final String KEEP_ALIVE_MAX = "max";
+    public static final String KEEP_ALIVE_TIMEOUT = "timeout";
+    public static final String KEEP_ALIVE_MAX = "max";
 
     /**
      * HTTP请求报文或者HTTP响应报文首部实例

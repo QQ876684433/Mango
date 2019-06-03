@@ -54,8 +54,12 @@ public class StatusTest {
     }
 
     private HttpResponse mockResponse(String text) {
-        InputStream is = new ByteArrayInputStream(text.getBytes());
-        return new HttpResponse(is);
+        try {
+            InputStream is = new ByteArrayInputStream(text.getBytes());
+            return new HttpResponse(is);
+        } catch (Exception e){
+            return null;
+        }
     }
     //字节流转为字符串的方法
     private String streamToString(InputStream inputStream,String charset) {
