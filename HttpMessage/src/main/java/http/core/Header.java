@@ -25,7 +25,7 @@ public class Header {
      *
      * @param is 首部输入流
      */
-    Header(InputStream is) {
+    Header(InputStream is) throws IOException {
         this();
 
         int buffer;
@@ -56,7 +56,7 @@ public class Header {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException("解析首部出错！");
         }
     }
 
