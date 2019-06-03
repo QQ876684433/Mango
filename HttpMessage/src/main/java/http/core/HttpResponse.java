@@ -1,6 +1,7 @@
 package http.core;
 
 import com.sun.istack.internal.Nullable;
+import http.exception.HttpParseFailException;
 import http.util.HttpStatus;
 import http.util.header.RequestHeader;
 import http.util.header.ResponseHeader;
@@ -172,7 +173,7 @@ public class HttpResponse {
             this.setVersion(splits[0]);
             this.setStatus(Integer.parseInt(splits[1]));
         } catch (IOException e) {
-            throw new IOException("解析响应报文起始行出错！");
+            throw new HttpParseFailException("解析响应报文起始行出错！");
         }
 
         // 解析响应报文首部
@@ -185,7 +186,7 @@ public class HttpResponse {
                     responseInputStream
             );
         } catch (Exception e) {
-            throw new IOException("解析响应报文实体出错！");
+            throw new HttpParseFailException("解析响应报文实体出错！");
         }
     }
 

@@ -1,5 +1,7 @@
 package http.core;
 
+import http.exception.HttpHeaderParseFailException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +58,7 @@ public class Header {
                 }
             }
         } catch (IOException e) {
-            throw new IOException("解析首部出错！");
+            throw new HttpHeaderParseFailException("解析首部出错！");
         }
     }
 

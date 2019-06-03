@@ -1,6 +1,8 @@
 package http.core;
 
 import com.sun.istack.internal.Nullable;
+import http.exception.HttpParseFailException;
+import http.exception.HttpWriteOutException;
 import http.util.HttpMethod;
 import http.util.header.RequestHeader;
 import http.util.io.InputOutputTransform;
@@ -165,7 +167,7 @@ public class HttpRequest {
             this.setUrl(splits[1]);
             this.setVersion(splits[2]);
         } catch (Exception e) {
-            throw new Exception("解析请求报文起始行出错！");
+            throw new HttpParseFailException("解析请求报文起始行出错！");
         }
 
         // 解析请求报文首部
@@ -179,7 +181,7 @@ public class HttpRequest {
                         requestInputStream
                 );
             } catch (Exception e) {
-                throw new Exception("解析实体部分出错！");
+                throw new HttpParseFailException("解析实体部分出错！");
             }
     }
 
@@ -188,7 +190,7 @@ public class HttpRequest {
      *
      * @param outputStream 目的输出流
      */
-    public void writeTo(OutputStream outputStream) {
+    public void writeTo(OutputStream outputStream) throws HttpWriteOutException {
         PrintWriter pw = new PrintWriter(outputStream);
 
         // 输出请求报文起始行
@@ -209,7 +211,7 @@ public class HttpRequest {
             try {
                 InputOutputTransform.inputStream2OutputStream(is, outputStream);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new HttpWriteOutException("请求报文发送失败！");
             }
         }
     }
@@ -222,7 +224,11 @@ public class HttpRequest {
     @Override
     public String toString() {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        this.writeTo(os);
+        try {
+            this.writeTo(os);
+        } catch (HttpWriteOutException e) {
+            e.printStackTrace();
+        }
         return os.toString();
     }
 }
