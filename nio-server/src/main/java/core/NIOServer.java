@@ -2,6 +2,7 @@ package core;
 
 import http.core.HttpRequest;
 import http.core.HttpResponse;
+import http.exception.HttpParseFailException;
 import http.util.handler.HttpRequestUtils;
 import http.util.handler.HttpUtils;
 import service.HttpContext;
@@ -108,10 +109,8 @@ public class NIOServer {
                                     // 返回响应
                                     byteBuffer.put(httpResponse.toString().getBytes());
                                     clientChannel.write(byteBuffer);
-                                } catch (IOException ignored){
-                                    // TODO
-                                    //  等飞飞把转化HttpResponse的异常写好
-                                    //  如果是由于HttpResponse转化失败而导致的异常直接忽略
+                                } catch (HttpParseFailException ignored){
+
                                 } catch (Exception e){
                                     e.printStackTrace();
                                 } finally {
