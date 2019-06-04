@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * HTTP报文首部类
@@ -63,6 +64,17 @@ public class Header {
     }
 
     /**
+     * 获取所有已经设置的首部
+     *
+     * @return 所有首部的键值对
+     */
+    public Properties getHeaders() {
+        Properties props = new Properties();
+        props.putAll(headers);
+        return props;
+    }
+
+    /**
      * 设置报文首部属性
      *
      * @param key   首部键
@@ -89,7 +101,7 @@ public class Header {
     /**
      * 获取首部文本
      *
-     * @param charset
+     * @param charset 首部文本的编码
      * @return 首部文本
      */
     public String getHeaderText(Charset charset) {
@@ -98,8 +110,18 @@ public class Header {
     }
 
     /**
+     * 获取首部文本
+     *
+     * @return 首部文本
+     */
+    public String getHeaderText() {
+        return getHeaderText(Charset.defaultCharset());
+    }
+
+    /**
      * 获取首部输出流
      *
+     * @param charset 编码
      * @return 首部输出流
      */
     private OutputStream getHeaderOutputStream(Charset charset) {
@@ -115,5 +137,14 @@ public class Header {
             e.printStackTrace();
         }
         return os;
+    }
+
+    /**
+     * 获取首部输出流
+     *
+     * @return 首部输出流
+     */
+    private OutputStream getHeaderOutputStream() {
+        return getHeaderOutputStream(Charset.defaultCharset());
     }
 }
