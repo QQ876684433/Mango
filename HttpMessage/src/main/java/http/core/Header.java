@@ -98,8 +98,18 @@ public class Header {
     }
 
     /**
+     * 获取首部文本
+     *
+     * @return 首部文本
+     */
+    public String getHeaderText() {
+        return getHeaderText(Charset.defaultCharset());
+    }
+
+    /**
      * 获取首部输出流
      *
+     * @param charset 编码
      * @return 首部输出流
      */
     private OutputStream getHeaderOutputStream(Charset charset) {
@@ -115,5 +125,14 @@ public class Header {
             e.printStackTrace();
         }
         return os;
+    }
+
+    /**
+     * 获取首部输出流
+     *
+     * @return 首部输出流
+     */
+    private OutputStream getHeaderOutputStream() {
+        return getHeaderOutputStream(Charset.defaultCharset());
     }
 }

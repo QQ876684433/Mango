@@ -203,7 +203,7 @@ public class HttpResponse {
         pw.println(this.getMessage());
 
         // 输出请求首部
-        String headers = this.getHeader().getHeaderText(this.responseBody.getMediaType().getCharset());
+        String headers = this.getHeader().getHeaderText();
         pw.println(headers);
 
         // 输出空行

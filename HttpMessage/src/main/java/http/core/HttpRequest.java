@@ -199,7 +199,7 @@ public class HttpRequest {
         pw.println(this.getVersion());
 
         // 输出请求首部
-        String headers = this.getHeader().getHeaderText(this.requestBody.getMediaType().getCharset());
+        String headers = this.getHeader().getHeaderText();
         pw.println(headers);
 
         // 输出空行
