@@ -1,13 +1,9 @@
 package util;
 
-import http.util.header.RequestHeader;
 import model.ParamTuple;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
  * 围绕着Request进行各种操作的辅助类
@@ -25,18 +21,7 @@ public class RequestHelper {
      * @return 如果符合http规范的header形式，返回true，否则返回false
      */
     public static boolean validateHeader(ParamTuple o) {
-        Class<RequestHeader> clazz = RequestHeader.class;
-        Field[] fields = clazz.getFields();
-
-        List<String> headers = Arrays.stream(fields).map(field -> {
-            try {
-                return (String) field.get(clazz);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
-
+        Set<String> headers = RequestHeaderSet.getHeaderSet();
         return headers.contains(o.getKey()) && o.getValue().length() > 0;
     }
 

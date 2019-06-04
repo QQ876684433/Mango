@@ -29,7 +29,11 @@
                 <Tab text="Body">
                     <content>
                         <AnchorPane fx:id="bodyPane" minHeight="0.0" minWidth="0.0" prefHeight="277.0"
-                                    prefWidth="600.0"/>
+                                    prefWidth="600.0">
+                            <children>
+                                <TextArea fx:id="bodyArea" layoutY="-2.0" prefHeight="463.0" prefWidth="850.0"/>
+                            </children>
+                        </AnchorPane>
                     </content>
                 </Tab>
                 <Tab text="Headers">

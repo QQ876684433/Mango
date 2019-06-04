@@ -4,6 +4,7 @@ import http.core.HttpRequest;
 import http.core.HttpResponse;
 import http.util.HttpMethod;
 import http.util.HttpVersion;
+import http.util.header.RequestHeader;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,9 +13,10 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import model.ParamTuple;
 import util.RequestHelper;
-import util.SocketContext;
+import util.SocketHolder;
 import view.Prompt;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -105,61 +107,69 @@ public class RequestViewController {
 
         methodBox.getSelectionModel().selectFirst();
 
+        sendButton.setOnAction(event -> {
+            try {
+                sendRequest();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Prompt.display("异常", e.getMessage());
+            }
+        });
+
     }
 
 
-    @FXML
-    private void sendRequest() {
-        if (check()) {
+    /**
+     * 发送请求，得到响应，展示响应界面
+     *
+     * @throws Exception 各种过程中可能会产生的异常
+     */
+    private void sendRequest() throws Exception {
 //            Prompt.display("已发送请求", "url: " + urlTf.getText());
-            HttpRequest request = buildHttpRequest();
-            // 如果是第一次发送请求，建立socket链接
-            if (!SocketContext.initialized()) {
-                try {
-                    //格式判断
-                    String ip = getIp();
-                    int port = getPort();
-                    if (!(0 <= port && port <= 65535))
-                        throw new RuntimeException("端口格式错误");
-                    SocketContext.build(ip, port); //TODO 建立socket的链接
-                } catch (NumberFormatException e) {
-                    Prompt.display("异常", "端口格式错误");
-                } catch (RuntimeException e) {
-                    Prompt.display("异常", e.getMessage());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Prompt.display("异常", "socket链接建立失败");
-                }
-            }
-            Socket s = SocketContext.getSocket();
-            HttpResponse response;
-            try {
-                request.writeTo(s.getOutputStream());
-                // 在此处阻塞
-                response = new HttpResponse(s.getInputStream());
-                Stage responseStage = new Stage();
-                responseStage.setTitle("Response");
-                FXMLLoader responseViewLoader = new FXMLLoader();
-                responseViewLoader.setLocation(this.getClass().getResource("/view/response_view.fxml"));
+        check();
+        HttpRequest request = buildHttpRequest();
+        Socket s;
+        try {
+            //格式判断
+            String ip = getIp();
+            int port = getPort();
+            if (!(0 <= port && port <= 65535))
+                throw new Exception("端口格式错误");
 
-                try {
-                    Parent responseViewRoot = responseViewLoader.load();
-                    ResponseViewController responseController = responseViewLoader.getController();
-                    //TODO responseController.setData();
-                    responseStage.setScene(new Scene(responseViewRoot, 850, 500));
-                    responseStage.show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Prompt.display("异常", "读取响应界面fxml文件时发生异常");
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                Prompt.display("错误", "请求失败");
-            }
-
-
+            s = SocketHolder.of(ip, port);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("端口格式错误");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("socket链接建立失败");
         }
+
+        HttpResponse response;
+        try {
+            request.writeTo(s.getOutputStream());
+//             在此处阻塞
+            response = new HttpResponse(s.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("请求失败");
+        }
+
+        Stage responseStage = new Stage();
+        responseStage.setTitle("Response");
+        FXMLLoader responseViewLoader = new FXMLLoader();
+        responseViewLoader.setLocation(this.getClass().getResource("/view/response_view.fxml"));
+
+        try {
+            Parent responseViewRoot = responseViewLoader.load();
+            ResponseViewController responseController = responseViewLoader.getController();
+            responseController.bindResponse(response);
+            responseStage.setScene(new Scene(responseViewRoot, 850, 500));
+            responseStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("读取响应界面fxml文件时发生异常");
+        }
+
     }
 
     @FXML
@@ -189,31 +199,50 @@ public class RequestViewController {
      *
      * @return 构造完毕的HttpRequest实例
      */
-    private HttpRequest buildHttpRequest() {
+    private HttpRequest buildHttpRequest() throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(this.getClass().getResource("/view/body_tab.fxml"));
+        Parent bodyTab = loader.load();
+        BodyTabController bodyTabController = loader.getController();
+
         HttpRequest request = new HttpRequest();
         request.setVersion(HttpVersion.HTTP_VERSION_1_1);
         request.setMethod(methodBox.getValue());
         request.setUrl(
                 urlTf.getText() + (methodBox.getValue().equals(HttpMethod.GET) ?
                         ("?" + RequestHelper.buildParamString(paramTable.getItems())) : ""));
+
+        //TODO set request body
+        if (methodBox.getValue().equals(HttpMethod.POST)) {
+            request.setHeader(RequestHeader.CONTENT_TYPE, bodyTabController.getContentType());
+
+            byte[] content = bodyTabController.getContent();
+            int contentLength = content.length;
+            request.setRequestBody(new ByteArrayInputStream(content));
+            request.setHeader(RequestHeader.CONTENT_LENGTH, String.valueOf(contentLength));
+        }
+
+        request.setHeader(RequestHeader.ACCEPT, "*/*");
+        request.setHeader(RequestHeader.CONNECTION, "keep-alive; timeout=30,max=10");
+        request.setHeader(RequestHeader.ACCEPT_ENCODING, "gzip, deflate");
+
+        //手动设置的header可以覆盖系统行为
         headerTable.getItems()
                 .filtered(RequestHelper::validateHeader)
                 .forEach(o -> {
                     request.setHeader(o.getKey(), o.getValue());
                 });
 
-        //TODO setBody
 
         return request;
     }
 
-    private boolean check() {
-        //TODO 在发送之前可能需要检查参数设置的正确性
+    private void check() {
+        //TODO validate those parameters
         if (urlTf.getText().length() == 0) {
-            Prompt.display("错误", "请填写url");
-            return false;
+            throw new RuntimeException("请填写url");
+
         }
-        return true;
     }
 
     private String getIp() {

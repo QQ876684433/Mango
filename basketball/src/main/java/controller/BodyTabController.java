@@ -11,10 +11,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.ParamTuple;
+import org.apache.commons.lang3.ArrayUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * body_tab视图的控制器类
@@ -101,6 +106,7 @@ public class BodyTabController {
             for (Node n : node.getChildrenUnmodifiable()) {
                 n.setLayoutY(n.getLayoutY() - 15);
             }
+
             ObservableList<ParamTuple> initItems = FXCollections.observableArrayList();
             initItems.add(new ParamTuple("key", "value", "description"));
             controller.setInitItems(initItems);
@@ -166,5 +172,83 @@ public class BodyTabController {
         ObservableList<Node> children = contentPane.getChildren();
         children.addAll(Arrays.asList(node));
     }
+
+    public String getContentType() {
+        if (noneBtn.isSelected())
+            return "text/plain";
+        else if (formDataBtn.isSelected())
+            return "multipart/form-data";
+        else if (urlEncodedBtn.isSelected())
+            return "application/x-www-form-urlencoded";
+        else if (rawBtn.isSelected()) {
+            if ("Text".equals(rawType.getValue())) {
+                return "application/x-www-form-urlencoded";
+            } else {
+                String value = rawType.getValue();
+                return value.substring(value.indexOf("(") + 1, value.indexOf(")"));
+            }
+        } else if (binaryBtn.isSelected()) {
+            return "text/plain";
+        }
+        return "";
+
+    }
+
+    public byte[] getContent() {
+        if (noneBtn.isSelected()) {
+            return new byte[0];
+        } else if (formDataBtn.isSelected()) {
+            //TODO 未实现同时上传文本与文件
+            List<ParamTuple> formUnits = getMapTableContent();
+            return paramTuple2Bytes(formUnits);
+        } else if (urlEncodedBtn.isSelected()) {
+            List<ParamTuple> rows = getMapTableContent();
+            return paramTuple2Bytes(rows);
+        } else if (rawBtn.isSelected()) {
+            TextArea textArea = (TextArea) contentPane.getChildren().get(0);
+            return textArea.getText().getBytes();
+        } else if (binaryBtn.isSelected()) {
+            TextField filePath = (TextField) contentPane.getChildren().get(1);
+            byte[] buffer = null;
+
+            try {
+                File file = new File(filePath.getText());
+                FileInputStream fis = new FileInputStream(file);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+                byte[] content = new byte[1000];
+                int len;
+                while ((len = fis.read(content)) != -1) {
+                    bos.write(content, 0, len);
+                }
+                fis.close();
+                bos.close();
+                buffer = bos.toByteArray();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return buffer;
+
+        }
+        return new byte[0];
+    }
+
+    private List<ParamTuple> getMapTableContent() {
+        AnchorPane mapTablePane = (AnchorPane) contentPane.getChildren().get(0);
+        for (Node node : mapTablePane.getChildren()) {
+            if (node instanceof TableView) {
+                return ((TableView<ParamTuple>) node).getItems();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private byte[] paramTuple2Bytes(List<ParamTuple> list) {
+        final byte[][] bytes = {new byte[0]};
+        list.forEach(t -> {
+            bytes[0] = ArrayUtils.addAll(bytes[0], (t.getKey() + "=" + t.getValue()).getBytes());
+        });
+        return bytes[0];
+    }
+
 
 }
