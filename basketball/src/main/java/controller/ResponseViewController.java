@@ -1,10 +1,11 @@
 package controller;
 
+import http.core.HttpResponse;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import model.ParamTuple;
-import util.ParamTupleTableHelper;
 
 
 /**
@@ -34,6 +35,9 @@ public class ResponseViewController {
     private TableColumn<ParamTuple, String> headerValueColumn;
 
     @FXML
+    private TextArea bodyArea;
+
+    @FXML
     private void initialize() {
         statusNameColumn.setCellValueFactory(cellData -> cellData.getValue().keyProperty());
         statusValueColumn.setCellValueFactory(cellData -> cellData.getValue().valueProperty());
@@ -43,16 +47,19 @@ public class ResponseViewController {
 
     }
 
-    public void setStatus(ParamTuple... items) {
-        statusTable.setItems(ParamTupleTableHelper.packagePT(items));
-    }
+    public void bindResponse(HttpResponse response) {
+        ParamTuple status = new ParamTuple("status", response.getStatus() + " : " + response.getMessage(), "");
+        ParamTuple version = new ParamTuple("version", response.getVersion(), "");
+        statusTable.getItems().addAll(status, version);
 
-    public void setHeaders(ParamTuple... items) {
-        headersTable.setItems(ParamTupleTableHelper.packagePT(items));
-    }
+        response.getHeader().getHeaders().forEach((k, v) -> {
+            ParamTuple header = new ParamTuple((String) k, (String) v, "");
+            headersTable.getItems().add(header);
+        });
 
-    public void setContent(String contentType, byte[] content) {
-        //TODO 待实现，需考虑文本、文件、流媒体此三种情况
+
+        //TODO get response body
+        bodyArea.setText(response.getResponseBodyText());
     }
 
 

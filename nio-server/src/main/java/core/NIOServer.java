@@ -17,6 +17,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
@@ -77,6 +78,8 @@ public class NIOServer {
                             SocketChannel clientChannel = (SocketChannel) key.channel();
 
                             if (key.isReadable()) {
+                                //判断socket链接是否断开，以防finally块出错
+                                boolean closed = false;
                                 try {
                                     ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
                                     // (3) 读取数据以块为单位批量读取
@@ -88,37 +91,58 @@ public class NIOServer {
                                     // 拿到客户端发来的请求
                                     HttpRequest httpRequest = new HttpRequest(new ByteArrayInputStream(byteBuffer.array()));
 
-                                    // TODO
-                                    //  要根据请求报文来判断是长链接或短链接
-                                    HttpUtils httpUtils = new HttpRequestUtils(httpRequest);
-                                    if(httpUtils.isLongConnection()){
-                                        Properties keepAlive = httpUtils.getLongConnectionDuration();
-                                        String timout = keepAlive.getProperty(HttpUtils.KEEP_ALIVE_TIMEOUT);
-                                        String max = keepAlive.getProperty(HttpUtils.KEEP_ALIVE_MAX);
+                                    try {
+                                        // 处理请求
+                                        HttpContext httpContext = new HttpContext(HttpMethodFactory.getHttpMethod(httpRequest));
+                                        HttpResponse httpResponse = httpContext.processRequest(httpRequest);
+
+                                        byteBuffer.clear();
+                                        // 返回响应
+                                        byteBuffer.put(httpResponse.toString().getBytes());
+                                        clientChannel.write(byteBuffer);
+                                    } catch (Exception e) {
+                                        //handle处理请求过程中抛出的异常
+                                        e.printStackTrace();
                                     }
-                                    //  如果是长链接且已经绑定了计时器或计数器，则判断是否继续处理
-                                    Object attach = key.attachment();
-                                    //  否则绑定一个计时器或者计数器
-                                    key.attach(attach);
 
-                                    // 处理请求
-                                    HttpContext httpContext = new HttpContext(HttpMethodFactory.getHttpMethod(httpRequest));
-                                    HttpResponse httpResponse = httpContext.processRequest(httpRequest);
+                                    //判断长短连接
+                                    HttpUtils httpUtils = new HttpRequestUtils(httpRequest);
+                                    //默认时间单位为S
+                                    int timeout = 0, max = 0;
+                                    LongConnectionContext lcContext = null;
 
-                                    byteBuffer.clear();
-                                    // 返回响应
-                                    byteBuffer.put(httpResponse.toString().getBytes());
-                                    clientChannel.write(byteBuffer);
-                                } catch (HttpParseFailException ignored){
+                                    if (httpUtils.isLongConnection()) {
+                                        Properties keepAlive = httpUtils.getLongConnectionDuration();
+                                        timeout = Integer.parseInt(keepAlive.getProperty(HttpUtils.KEEP_ALIVE_TIMEOUT));
+                                        max = Integer.parseInt(keepAlive.getProperty(HttpUtils.KEEP_ALIVE_MAX));
 
-                                } catch (Exception e){
+                                        lcContext = (LongConnectionContext) key.attachment();
+                                        if (lcContext == null) {
+                                            //  否则绑定一个计时器或者计数器
+                                            lcContext = new LongConnectionContext();
+                                            key.attach(lcContext);
+                                        }
+
+                                        lcContext.addRequestsServedCount();
+                                    }
+
+                                    //如果是短链接或者长链接到达要求，断开tcp链接
+                                    if (!httpUtils.isLongConnection() ||
+                                            lcContext.getRequestsServed() >= max ||
+                                            lcContext.getInitTime() + timeout * 1000L < new Date().getTime()) {
+                                        closed = true;
+                                        clientChannel.socket().close();
+                                    }
+
+                                } catch (HttpParseFailException ignored) {
+
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 } finally {
-                                    keyIterator.remove();
-                                    key.interestOps(SelectionKey.OP_READ);
-                                    // TODO
-                                    //  这里如果是短链接则直接关闭连接
-                                    clientChannel.socket().close();
+                                    if (!closed) {
+                                        keyIterator.remove();
+                                        key.interestOps(SelectionKey.OP_READ);
+                                    }
                                 }
                             }
                         }
