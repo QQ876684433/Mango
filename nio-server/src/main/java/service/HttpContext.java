@@ -4,9 +4,9 @@ import http.core.HttpRequest;
 import http.core.HttpResponse;
 
 public class HttpContext {
-    private HttpMethod httpMethod;
+    private HttpRequestHandler httpMethod;
 
-    public HttpContext(HttpMethod httpMethod) {
+    public HttpContext(HttpRequestHandler httpMethod) {
         this.httpMethod = httpMethod;
     }
 
