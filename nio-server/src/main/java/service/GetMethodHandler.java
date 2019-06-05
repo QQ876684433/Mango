@@ -23,7 +23,7 @@ public class GetMethodHandler implements HttpRequestHandler {
                     ResponseHeader.CONTENT_TYPE,
                     httpRequest.getHeader().getProperty(RequestHeader.CONTENT_TYPE));
             httpResponse.setStatus(HttpStatus.CODE_200);
-            return new HttpResponse(inputStream);
+            return httpResponse;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("文件不存在");
