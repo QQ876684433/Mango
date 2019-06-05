@@ -209,7 +209,7 @@ public class RequestViewController {
         request.setVersion(HttpVersion.HTTP_VERSION_1_1);
         request.setMethod(methodBox.getValue());
         request.setUrl(
-                urlTf.getText() + (methodBox.getValue().equals(HttpMethod.GET) ?
+                getUrl() + (methodBox.getValue().equals(HttpMethod.GET) ?
                         ("?" + RequestHelper.buildParamString(paramTable.getItems())) : ""));
 
         //TODO set request body
@@ -243,6 +243,11 @@ public class RequestViewController {
             throw new RuntimeException("请填写url");
 
         }
+    }
+
+    private String getUrl() {
+        String raw = urlTf.getText();
+        return raw.substring(raw.indexOf("/"));
     }
 
     private String getIp() {

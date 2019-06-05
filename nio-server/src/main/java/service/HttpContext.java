@@ -11,6 +11,8 @@ public class HttpContext {
     }
 
     public HttpResponse processRequest(HttpRequest httpRequest) {
-        return httpMethod.processRequest(httpRequest);
+        //TODO 展示新的处理逻辑
+//        return httpMethod.processRequest(httpRequest);
+        return ServiceRegister.handleRequest(httpRequest);
     }
 }

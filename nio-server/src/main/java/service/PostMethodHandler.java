@@ -6,7 +6,7 @@ import http.core.HttpResponse;
 public class PostMethodHandler implements HttpRequestHandler {
     @Override
     public HttpResponse processRequest(HttpRequest httpRequest) {
-        // TODO 处理 POST 请求
+        //暂时弃用
         return null;
     }
 }
