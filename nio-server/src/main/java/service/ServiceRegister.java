@@ -3,8 +3,10 @@ package service;
 import http.core.HttpRequest;
 import http.core.HttpResponse;
 import http.util.HttpStatus;
+import http.util.header.ResponseHeader;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -26,6 +28,22 @@ public class ServiceRegister {
     public static HttpResponse handleRequest(HttpRequest request) {
         HttpResponse response = null;
         for (Map.Entry<String, ServerService> e : serviceChain.entrySet()) {
+            Iterator<Redirection> iterator = Configuration.getConfiguration().getRedirectionList();
+            while (iterator.hasNext()) {
+                Redirection redirection = iterator.next();
+                if (request.getUrl().startsWith(redirection.getSource())) {
+                    response = new HttpResponse();
+                    switch (redirection.getType()) {
+                        case Redirection.PERMANENTLY:
+                            response.setStatus(HttpStatus.CODE_301);
+                            break;
+                        case Redirection.TEMPORATILY:
+                            response.setStatus(HttpStatus.CODE_302);
+                            break;
+                    }
+                    response.addHeader(ResponseHeader.LOCATION, redirection.getTarget());
+                }
+            }
             if (request.getUrl().startsWith(e.getKey())) {
                 response = e.getValue().processRequest(request);
                 break;
