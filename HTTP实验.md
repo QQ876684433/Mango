@@ -19,7 +19,7 @@
 
 模仿 `PostMan`的设计，其图形页面显示如下：
 
-
+![img](file:///C:\users\lfm\Application Data\Tencent\Users\1071956678\TIM\WinTemp\RichOle\HU~_$6JY_E]T]YE(9)`Y5LC.png)
 
 
 
