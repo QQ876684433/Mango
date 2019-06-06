@@ -3,6 +3,7 @@ package service;
 import http.core.HttpRequest;
 import http.core.HttpResponse;
 import http.util.HttpStatus;
+import http.util.HttpVersion;
 import http.util.header.ResponseHeader;
 
 import java.util.HashMap;
@@ -53,6 +54,7 @@ public class ServiceRegister {
             response = new HttpResponse();
             response.setStatus(HttpStatus.CODE_404);
         }
+        response.setVersion(request.getVersion());
         return response;
     }
 
