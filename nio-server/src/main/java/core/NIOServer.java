@@ -5,6 +5,7 @@ import http.core.HttpResponse;
 import http.exception.HttpParseFailException;
 import http.util.handler.HttpRequestUtils;
 import http.util.handler.HttpUtils;
+import service.Configuration;
 import service.HttpContext;
 import service.HttpMethodFactory;
 
@@ -26,6 +27,8 @@ public class NIOServer {
     public static void main(String[] args) throws IOException {
         Selector serverSelector = Selector.open();
         Selector clientSelector = Selector.open();
+
+        Configuration.getConfiguration();
 
         new Thread(() -> {
             try {
