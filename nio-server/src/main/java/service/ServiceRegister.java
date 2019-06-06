@@ -45,7 +45,7 @@ public class ServiceRegister {
                     response.addHeader(ResponseHeader.LOCATION, redirection.getTarget());
                 }
             }
-            if (request.getUrl().startsWith(e.getKey())) {
+            if (response == null && request.getUrl().startsWith(e.getKey())) {
                 response = e.getValue().processRequest(request);
                 break;
             }

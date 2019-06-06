@@ -31,7 +31,7 @@ abstract public class HttpUtils {
      * @return keep-alive: true, close: false
      */
     public boolean isLongConnection() {
-        String conType = header.getProperty(ResponseHeader.CONTENT_TYPE);
+        String conType = header.getProperty(ResponseHeader.CONNECTION);
         return CONNECTION_KEEP_ALIVE.equalsIgnoreCase(conType);
     }
 

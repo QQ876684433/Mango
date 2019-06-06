@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <redirections>
     <!--    永久重定向-->
-    <redirection type="perm" source="/imgs" target="/newimgs"/>
+    <redirection type="perm" source="/file" target="/newfile"/>
     <redirection type="perm" source="/imgs" target="/newimgs"/>
     <redirection type="perm" source="/imgs" target="/newimgs"/>
 
