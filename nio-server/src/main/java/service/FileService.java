@@ -1,5 +1,6 @@
 package service;
 
+import exception.ServerErrorExcetipn;
 import http.core.HttpRequest;
 import http.core.HttpResponse;
 import http.util.HttpMethod;
@@ -40,6 +41,7 @@ public class FileService implements ServerService {
     @Override
     public HttpResponse processRequest(HttpRequest request) {
         HttpResponse response = new HttpResponse();
+
         if (request.getMethod().equals(HttpMethod.GET))
             getFile(request, response);
         else if (request.getMethod().equals(HttpMethod.POST))
@@ -79,6 +81,7 @@ public class FileService implements ServerService {
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
+                response.setStatus(HttpStatus.CODE_500);
             }
         }
         try {
@@ -98,6 +101,7 @@ public class FileService implements ServerService {
             response.setStatus(HttpStatus.CODE_404);
         } catch (Exception e) {
             e.printStackTrace();
+            response.setStatus(HttpStatus.CODE_500);
         }
     }
 

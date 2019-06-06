@@ -1,5 +1,6 @@
 package service;
 
+import exception.ServerErrorExcetipn;
 import http.core.HttpRequest;
 import http.core.HttpResponse;
 
