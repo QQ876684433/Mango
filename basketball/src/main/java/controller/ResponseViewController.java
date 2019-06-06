@@ -7,6 +7,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import model.ParamTuple;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 
 /**
  * 响应视图的控制器类
@@ -65,6 +70,21 @@ public class ResponseViewController {
         bodyArea.setText(response.getResponseBodyText());
 
         plainArea.setText(response.toString());
+    }
+
+    public void setBody(InputStream in) {
+        StringBuilder builder = new StringBuilder();
+        String line;
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            while ((line = br.readLine()) != null) {
+                builder.append(line);
+                builder.append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        bodyArea.setText(builder.toString());
     }
 
 

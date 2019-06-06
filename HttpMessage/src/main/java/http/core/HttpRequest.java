@@ -214,6 +214,7 @@ public class HttpRequest {
                 throw new HttpWriteOutException("请求报文发送失败！");
             }
         }
+        pw.flush();
     }
 
     /**

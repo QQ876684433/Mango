@@ -27,7 +27,7 @@ public class MultiMediaTest {
     }
 
     @Test
-    public void mutiTest() throws IOException {
+    public void multiTest() throws IOException {
         //TODO:实现多媒体测试
         File file = new File(relativePath() + "iii.jpg");
         this.fileTransformer = new ImageTransformer();

@@ -1,9 +1,6 @@
 package core;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,7 +17,7 @@ public class HttpServer {
             //死循环不间断监听客户端请求
             while(true){
                 final Socket socket = serverSocket.accept();
-                System.out.println("biuld a new tcp link with client,the cient address:"+
+                System.out.println("build a new tcp link with client,the cient address:" +
                         socket.getInetAddress()+":"+socket.getPort());
                 //并发处理HTTP客户端请求
                 service(socket);
@@ -65,13 +62,13 @@ public class HttpServer {
                     outSocket.write(responseFirstLine.getBytes());
                     outSocket.write(responseHead.getBytes());
                     //通过HTTP请求中的uri读取相应文件发送给客户端
-                    FileInputStream writehtml = new FileInputStream(new File("./index.html"));
+                    FileInputStream writeHtml = new FileInputStream(new File("./index.html"));
                     outSocket.write("\r\n".getBytes());
-                    byte[] htmlbuffer = new byte[writehtml.available()];
-                    if(writehtml !=null){
+                    byte[] htmlbuffer = new byte[writeHtml.available()];
+                    if (writeHtml != null) {
                         int len = 0;
                         System.out.println("writeHtml");
-                        while((len = writehtml.read(htmlbuffer)) != -1){
+                        while ((len = writeHtml.read(htmlbuffer)) != -1) {
                             outSocket.write(htmlbuffer, 0,len);
                         }
                     }
