@@ -38,6 +38,10 @@ public class ResponseViewController {
     private TextArea bodyArea;
 
     @FXML
+    private TextArea plainArea;
+
+
+    @FXML
     private void initialize() {
         statusNameColumn.setCellValueFactory(cellData -> cellData.getValue().keyProperty());
         statusValueColumn.setCellValueFactory(cellData -> cellData.getValue().valueProperty());
@@ -57,9 +61,10 @@ public class ResponseViewController {
             headersTable.getItems().add(header);
         });
 
-
         //TODO get response body
         bodyArea.setText(response.getResponseBodyText());
+
+        plainArea.setText(response.toString());
     }
 
 

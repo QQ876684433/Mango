@@ -15,17 +15,17 @@ import java.util.Map;
  * @since 2019/6/5
  */
 public class ServiceRegister {
-    static final Map<String, ServerService> servicePool = new HashMap<>();
+    static final Map<String, ServerService> serviceChain = new HashMap<>();
 
     static {
         //注册服务
-        servicePool.put("/file", FileService.getInstance());
+        serviceChain.put("/file", FileService.getInstance());
     }
 
 
     public static HttpResponse handleRequest(HttpRequest request) {
         HttpResponse response = null;
-        for (Map.Entry<String, ServerService> e : servicePool.entrySet()) {
+        for (Map.Entry<String, ServerService> e : serviceChain.entrySet()) {
             if (request.getUrl().startsWith(e.getKey())) {
                 response = e.getValue().processRequest(request);
                 break;
