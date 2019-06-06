@@ -61,6 +61,7 @@ public class FileService implements ServerService {
         String url = request.getUrl();
         String pattern = "/file/(.+[.].+)";
         Matcher matcher = Pattern.compile(pattern).matcher(url);
+        matcher.find();
         String fileName = matcher.group();
         ModifiableFile fileCached = ServerConfig.staticFiles.stream()
                 .filter(f -> f.getName().equals(fileName))

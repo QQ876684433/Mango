@@ -89,20 +89,15 @@ public class NIOServer {
                                     clientChannel.read(byteBuffer);
                                     byteBuffer.flip();
 
-                                    System.out.println(Charset.defaultCharset().newDecoder().decode(byteBuffer)
-                                            .toString());
+                                    System.out.println(new String(byteBuffer.array(),Charset.defaultCharset()));
                                     // 拿到客户端发来的请求
                                     HttpRequest httpRequest = new HttpRequest(new ByteArrayInputStream(byteBuffer.array()));
 
                                     try {
                                         // 处理请求
-                                        HttpContext httpContext = new HttpContext(HttpMethodFactory.getHttpMethod(httpRequest));
-                                        HttpResponse httpResponse = httpContext.processRequest(httpRequest);
-
-                                        byteBuffer.clear();
-                                        // 返回响应
-                                        byteBuffer.put(httpResponse.toString().getBytes());
-                                        clientChannel.write(byteBuffer);
+                                        HttpContext httpContext = new HttpContext();
+                                        HttpResponse response = httpContext.processRequest(httpRequest);
+                                        response.writeTo(clientChannel.socket().getOutputStream());
                                     } catch (Exception e) {
                                         //handle处理请求过程中抛出的异常
                                         e.printStackTrace();
