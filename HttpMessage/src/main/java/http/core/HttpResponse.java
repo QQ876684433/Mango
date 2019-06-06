@@ -214,7 +214,7 @@ public class HttpResponse {
             pw.print(this.getResponseBodyText());
         }
 
-        pw.flush();
+//        pw.flush();
     }
 
     /**

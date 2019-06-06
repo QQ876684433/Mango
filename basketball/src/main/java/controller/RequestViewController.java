@@ -233,7 +233,8 @@ public class RequestViewController {
         }
 
         request.setHeader(RequestHeader.ACCEPT, "*/*");
-        request.setHeader(RequestHeader.CONNECTION, "keep-alive; timeout=300,max=10");
+        request.setHeader(RequestHeader.CONNECTION, "keep-alive");
+        request.setHeader(RequestHeader.KEEP_ALIVE, "timeout=300,max=10");
         request.setHeader(RequestHeader.ACCEPT_ENCODING, "gzip, deflate");
 
         //手动设置的header可以覆盖系统行为
