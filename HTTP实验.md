@@ -52,82 +52,11 @@ _____
 
 #### 1.4 http中间解析模块
 
-封装与解析 http 的请求与响应内容
+- 封装与解析 http 的请求与响应内容，提供接口给其他所有模块之间的调用；
 
-具体文档如下
+- 将报文进行解析封装，基于字节流，作为请求发送、响应传输的方式
 
-_____
-
-
-
-|  版本   |   内容   |  修改时间  | 修改者 |
-| :-----: | :------: | :--------: | :----: |
-| v 0.0.1 | 起草文档 | 2019/05/18 |  chph  |
-
-
-
-### 1、HttpResponse类：解析和封装HTTP响应报文
-
-#### 1.1 响应状态行：
-
-##### 1.1.1 version：根据请求报文来定
-
-##### 1.1.2 statusCode：
-
-- 200：请求已成功，请求所希望的响应头或数据体将随此响应返回。
-- 301：被请求的资源已永久移动到新位置，并且将来任何对此资源的引用都应该使用本响应返回的若干个 URI 之一。
-- 302：请求的资源现在临时从不同的 URI 响应请求。由于这样的重定向是临时的，客户端应当继续向原有地址发送以后的请求。**只有在Cache-Control或Expires中进行了指定的情况下，这个响应才是可缓存的**。
-- 304：如果客户端发送了一个带条件的 GET 请求且该请求已被允许，而文档的内容（自上次访问以来或者根据请求的条件）并没有改变，则服务器应当返回这个状态码。304响应禁止包含消息体，因此始终以消息头后的第一个空行结尾。
-- 404：请求失败，请求所希望得到的资源未被在服务器上发现。405：请求行中指定的请求方法不能被用于请求相应的资源。该响应必须返回一个Allow 头信息用以表示出当前资源能够接受的请求方法的列表。　　鉴于 PUT，DELETE 方法会对服务器上的资源进行写操作，因而绝大部分的网页服务器都不支持或者在默认配置下不允许上述请求方法，对于此类请求均会返回405错误。
-- 500：服务器遇到了一个未曾预料的状况
-
-##### 1.1.3 message
-
-#### 1.2 响应头（Header）：
-
-- allow：对某网络资源的有效的请求行为，不允许则返回405
-- *<u>cacheControl：告诉所有的缓存机制是否可以缓存及哪种类型</u>*
-- contentLength：响应体的长度
-- contentLocation：请求资源可替代的备用的另一地址
-- contentType：响应体的内容类型
-- date：服务器发出响应的时间
-- <u>*eTag：请求变量的实体标签的当前值*</u>
-- <u>*expires：响应过期的日期和时间*</u>
-- location：用来重定向接收方到非请求URL的位置来完成请求或标识新的资源（返回3xx的状态码时，可以通过将该字段设为请求url重新请求资源）
-
-#### 1.3 响应主体（ResponseBody）：@Nullable
-
-#### 1.4 方法接口
-
-##### 1.4.1 包装响应报文
-
-- setVersion(HTTP_VERSION_1_1或者HTTP_VERSION_1_0)
-- setStatus(STATUS_CODE_200/...)		// message则内部根据code自动设置
-- getHeader().setAllow(HTTP_METHOD_GET/HTTP_METHOD_POST)
-- getHeader().setCacheControl(CACHE_CONTROL_NO_CACHE/...)
-- getHeader().setContentLocation(可替代请求资源的相对url)
-- getHeader().setContentType(String contentType)
-- getHeader().setETag(String eTag)
-- getHeader().setExpires(String yyyy-MM-dd_hh:mm:ss)
-- getHeader().setLocation(重定向资源的相对url)
-
-##### 1.4.2 若干getter方法
-
-##### 1.4.3 解析响应报文
-
-HttpResponse parse(InputStream is)
-
-##### 1.4.4 传输响应报文
-
-void writeTo(OutputStream os)
-
-##### 1.4.5 获取http报文文本格式：
-
-toString()
-
-____
-
-
+具体的解析内容涉及 `数据逻辑` 部分的内容。具体内容参见第三部分
 
 ### 2、HttpRequest类：解析和封装HTTP请求报文
 
@@ -189,14 +118,83 @@ toString()
 
 分别进行数据流的解析。其中，考虑到 `JavaFX` 本身 `API` 的限制，对于 `text / plain ` 和 `image / png` 格式进行展示，而 `audio / mp3` 与 `video / mpeg4` 直接进行字节流的显示
 
-### 2. 关键数据逻辑
+### 2. 数据逻辑
+
+具体文档如下
+
+------
 
 
 
-### 3. 关键流程说明
+|  版本   |   内容   |  修改时间  | 修改者 |
+| :-----: | :------: | :--------: | :----: |
+| v 0.0.1 | 起草文档 | 2019/05/18 |  chph  |
+
+
+
+### 1、HttpResponse类：解析和封装HTTP响应报文
+
+#### 1.1 响应状态行：
+
+##### 1.1.1 version：根据请求报文来定
+
+##### 1.1.2 statusCode：
+
+- 200：请求已成功，请求所希望的响应头或数据体将随此响应返回。
+- 301：被请求的资源已永久移动到新位置，并且将来任何对此资源的引用都应该使用本响应返回的若干个 URI 之一。
+- 302：请求的资源现在临时从不同的 URI 响应请求。由于这样的重定向是临时的，客户端应当继续向原有地址发送以后的请求。**只有在Cache-Control或Expires中进行了指定的情况下，这个响应才是可缓存的**。
+- 304：如果客户端发送了一个带条件的 GET 请求且该请求已被允许，而文档的内容（自上次访问以来或者根据请求的条件）并没有改变，则服务器应当返回这个状态码。304响应禁止包含消息体，因此始终以消息头后的第一个空行结尾。
+- 404：请求失败，请求所希望得到的资源未被在服务器上发现。405：请求行中指定的请求方法不能被用于请求相应的资源。该响应必须返回一个Allow 头信息用以表示出当前资源能够接受的请求方法的列表。
+- 500：服务器遇到了一个未曾预料的状况
+
+##### 1.1.3 message
+
+#### 1.2 响应头（Header）：
+
+- allow：对某网络资源的有效的请求行为，不允许则返回405
+- *<u>cacheControl：告诉所有的缓存机制是否可以缓存及哪种类型</u>*
+- contentLength：响应体的长度
+- contentLocation：请求资源可替代的备用的另一地址
+- contentType：响应体的内容类型
+- date：服务器发出响应的时间
+- <u>*eTag：请求变量的实体标签的当前值*</u>
+- <u>*expires：响应过期的日期和时间*</u>
+- location：用来重定向接收方到非请求URL的位置来完成请求或标识新的资源（返回3xx的状态码时，可以通过将该字段设为请求url重新请求资源）
+
+#### 1.3 响应主体（ResponseBody）：@Nullable
+
+#### 1.4 方法接口
+
+##### 1.4.1 包装响应报文
+
+- setVersion(HTTP_VERSION_1_1或者HTTP_VERSION_1_0)
+- setStatus(STATUS_CODE_200/...)		// message则内部根据code自动设置
+- getHeader().setAllow(HTTP_METHOD_GET/HTTP_METHOD_POST)
+- getHeader().setCacheControl(CACHE_CONTROL_NO_CACHE/...)
+- getHeader().setContentLocation(可替代请求资源的相对url)
+- getHeader().setContentType(String contentType)
+- getHeader().setETag(String eTag)
+- getHeader().setExpires(String yyyy-MM-dd_hh:mm:ss)
+- getHeader().setLocation(重定向资源的相对url)
+
+##### 1.4.2 若干getter方法
+
+##### 1.4.3 解析响应报文
+
+HttpResponse parse(InputStream is)
+
+##### 1.4.4 传输响应报文
+
+void writeTo(OutputStream os)
+
+##### 1.4.5 获取http报文文本格式：
+
+toString()
+
+### 3. 流程说明
 
 ###### 写完代码再加
 
-### 4. 实现结果说明
+### 4. 实现结果
 
 ###### 写完代码再加
