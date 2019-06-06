@@ -2,6 +2,7 @@ package service.statusReceiver;
 
 import http.core.HttpResponse;
 import http.util.HttpStatus;
+import http.util.header.ResponseHeader;
 
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class MethodNotAllowedHandler implements BaseHandler {
     public Map<String, Object> handleStatus(HttpResponse response) {
         Map<String, Object> ans = new HashMap<>();
         ans.put("status", HttpStatus.CODE_405);
-        ans.put("Allow", response.getHeader().getProperty("Allow"));
+        ans.put("Allow", response.getHeader().getProperty(ResponseHeader.ALLOW));
         //响应头
         ans.put("Response Headers", response.getHeader().getHeaderText(Charset.forName("utf-8")));
         return ans;
