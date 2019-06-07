@@ -59,10 +59,10 @@ public class HttpBody {
             buffer = new byte[is.available()];
             int len  = is.read(buffer);
             this.content = new byte[len];
-
-            FileOutputStream fos = new FileOutputStream(System.getProperty("user.dir") + "/client/a.jpg");
-            fos.write(buffer);
-            fos.flush();
+//
+//            FileOutputStream fos = new FileOutputStream(System.getProperty("user.dir") + "/client/a.jpg");
+//            fos.write(buffer);
+//            fos.flush();
 
             System.arraycopy(buffer, 0, this.content, 0, len);
         } catch (IOException e) {

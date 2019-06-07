@@ -209,10 +209,17 @@ public class HttpRequest {
         if (this.requestBody != null) {
             InputStream is = requestBody.getContent();
             try {
-                InputOutputTransform.inputStream2OutputStream(is, outputStream);
+                byte[] buf = new byte[is.available()];
+                is.read(buf);
+                pw.write(new String(buf));
             } catch (IOException e) {
                 throw new HttpWriteOutException("请求报文发送失败！");
             }
+//            try {
+//                InputOutputTransform.inputStream2OutputStream(is, outputStream);
+//            } catch (IOException e) {
+//                throw new HttpWriteOutException("请求报文发送失败！");
+//            }
         }
         pw.flush();
     }
