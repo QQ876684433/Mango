@@ -66,7 +66,7 @@ public class SocketHolder {
     @Synchronized
     public static Socket of(String ipAddress, int port) throws IOException {
         Socket socket = socketPool.stream()
-                .filter(s -> s.getInetAddress().getHostAddress().equals(ipAddress) && s.getPort() == port)
+                .filter(s -> s.getInetAddress().getHostName().equals(ipAddress) && s.getPort() == port)
                 .findFirst().orElse(null);
         if (socket != null) {
             try {
