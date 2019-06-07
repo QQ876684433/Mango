@@ -37,6 +37,7 @@ public class SocketHolder {
                         } catch (IOException e) {
                             e.printStackTrace();
                             iterator.remove();
+                            System.out.println("remove a socket");
                         }
                     }
 
@@ -79,7 +80,7 @@ public class SocketHolder {
 
         if (socket == null) {
             socket = new Socket(ipAddress, port);
-            System.out.println("port = " + socket.getLocalPort());
+            System.out.println("set up a socket with port " + socket.getLocalPort());
             socketPool.add(socket);
         }
 

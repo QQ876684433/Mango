@@ -80,19 +80,27 @@ public class NIOServer {
                             SocketChannel clientChannel = (SocketChannel) key.channel();
 
                             if (key.isReadable()) {
+
                                 LongConnectionContext lcContext = null;
                                 //判断socket链接是否断开，以防finally块出错
                                 boolean closed = false;
-                                //默认时间单位为S
-                                int timeout = 0, max = 0;
+
+                                //要求的离当前的最长活动间隔: 1min
+                                int activeRequirement = 60 * 1000;
+
                                 try {
                                     lcContext = (LongConnectionContext) key.attachment();
-                                    //如果是短链接或者长链接到达要求，断开tcp链接
-                                    if (lcContext != null && (
-                                            lcContext.getRequestsServed() >= max
-                                                    || lcContext.getInitTime() + timeout * 1000L < new Date().getTime())) {
-                                        closed = true;
-                                        clientChannel.close();
+                                    //如果上次活动时间距今过久
+                                    if (lcContext != null &&
+                                            lcContext.getLastActiveTime() + activeRequirement < new Date().getTime()) {
+                                        try {
+                                            //发送心跳包，如果发生异常则代表远程主机未响应，关闭链接
+                                            clientChannel.socket().sendUrgentData(0xFF);
+                                        } catch (IOException e) {
+                                            closed = true;
+                                            clientChannel.close();
+                                        }
+                                        lcContext.freshLastActiveTime();
                                     }
 
                                     ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
@@ -117,7 +125,7 @@ public class NIOServer {
 
                                     //判断长短连接
                                     HttpUtils httpUtils = new HttpRequestUtils(httpRequest);
-
+                                    int timeout = 0, max = 0;
                                     if (httpUtils.isLongConnection()) {
                                         Properties keepAlive = httpUtils.getLongConnectionDuration();
                                         timeout = Integer.parseInt(keepAlive.getProperty(HttpUtils.KEEP_ALIVE_TIMEOUT));
@@ -135,7 +143,8 @@ public class NIOServer {
 
                                     //如果是短链接或者长链接到达要求，断开tcp链接
                                     if (!httpUtils.isLongConnection() ||
-                                            lcContext.getRequestsServed() >= max) {
+                                            lcContext.getRequestsServed() >= max ||
+                                            lcContext.getInitTime() + timeout * 1000 < new Date().getTime()) {
                                         closed = true;
                                         clientChannel.close();
                                     }
