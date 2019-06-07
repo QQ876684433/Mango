@@ -60,9 +60,9 @@ public class HttpBody {
             int len  = is.read(buffer);
             this.content = new byte[len];
 
-//            FileOutputStream fos = new FileOutputStream("/home/steve/IdeaProjects/MasterJava/Mango/HttpMessage/mutiMedia/a.jpg");
-//            fos.write(buffer);
-//            fos.flush();
+            FileOutputStream fos = new FileOutputStream("/home/steve/IdeaProjects/MasterJava/Mango/HttpMessage/mutiMedia/a.jpg");
+            fos.write(buffer);
+            fos.flush();
 
             System.arraycopy(buffer, 0, this.content, 0, len);
         } catch (IOException e) {

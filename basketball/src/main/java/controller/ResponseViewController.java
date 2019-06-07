@@ -125,7 +125,7 @@ public class ResponseViewController {
         }
         bodyArea.setText(response.getResponseBodyText());
 
-        plainArea.setText(response.toString());
+        plainArea.setText(response.toString()+response.getResponseBodyText());
     }
 
     public void setBody(InputStream in) {

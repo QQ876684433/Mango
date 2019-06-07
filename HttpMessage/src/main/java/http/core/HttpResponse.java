@@ -224,15 +224,21 @@ public class HttpResponse {
         pw.println();
 
         // 处理请求实体
-        if (this.responseBody != null) {
-            pw.print(this.getResponseBodyText());
-        }
+//        if (this.responseBody.getMediaType().getMainType().equals("text") && this.responseBody != null) {
+//            pw.print(this.getResponseBodyText());
+//        }
 
         pw.flush();
     }
 
     public void writeTo(SocketChannel socketChannel) throws IOException {
-        ByteBuffer buffer = ByteBuffer.wrap(this.toString().getBytes());
+        ByteBuffer bb = ByteBuffer.wrap(this.toString().getBytes());
+        socketChannel.write(bb);
+        InputStream is = this.getResponseBodyStream();
+        byte[] b = new byte[is.available()];
+        is.read(b);
+        ByteBuffer buffer = ByteBuffer.wrap(b);
+
         System.out.println(this.toString());
         int l = socketChannel.write(buffer);
         System.out.println(l);
