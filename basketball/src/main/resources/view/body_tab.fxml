@@ -21,7 +21,11 @@
                      toggleGroup="$tg1"/>
         <RadioButton fx:id="binaryBtn" layoutX="452.0" layoutY="10.0" mnemonicParsing="false" text="binary"
                      toggleGroup="$tg1"/>
-        <AnchorPane fx:id="contentPane" layoutY="30.0" prefHeight="283.0" prefWidth="806.0"/>
+        <AnchorPane fx:id="contentPane" layoutY="30.0" prefHeight="283.0" prefWidth="806.0">
+            <children>
+
+            </children>
+        </AnchorPane>
         <ChoiceBox fx:id="rawType" layoutX="531.0" layoutY="5.0" prefHeight="30.0" prefWidth="65.0" visible="false">
             <items>
                 <FXCollections fx:factory="observableArrayList">
@@ -35,5 +39,7 @@
                 </FXCollections>
             </items>
         </ChoiceBox>
+        <Button fx:id="storeBtn" layoutX="92.0" layoutY="307.5" mnemonicParsing="false" prefHeight="41.0"
+                prefWidth="95.0" text="store"/>
     </children>
 </AnchorPane>

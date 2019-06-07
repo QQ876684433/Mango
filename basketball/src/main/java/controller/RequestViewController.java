@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import model.CachedFile;
 import model.ParamTuple;
 import util.HttpDateUtil;
+import util.RequestContentHelper;
 import util.RequestHelper;
 import view.Prompt;
 
@@ -118,6 +119,7 @@ public class RequestViewController {
             }
         });
 
+
     }
 
 
@@ -213,6 +215,7 @@ public class RequestViewController {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(this.getClass().getResource("/view/body_tab.fxml"));
         Parent bodyTab = loader.load();
+
         BodyTabController bodyTabController = loader.getController();
 
         HttpRequest request = new HttpRequest();
@@ -223,9 +226,9 @@ public class RequestViewController {
 
         //TODO set request body
         if (methodBox.getValue().equals(HttpMethod.POST)) {
-            request.setHeader(RequestHeader.CONTENT_TYPE, bodyTabController.getContentType());
+            request.setHeader(RequestHeader.CONTENT_TYPE, RequestContentHelper.getContentType());
 
-            byte[] content = bodyTabController.getContent();
+            byte[] content = RequestContentHelper.getContent();
             int contentLength = content.length;
             request.setRequestBody(new ByteArrayInputStream(content));
             request.setHeader(RequestHeader.CONTENT_LENGTH, String.valueOf(contentLength));

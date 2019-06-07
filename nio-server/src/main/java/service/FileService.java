@@ -1,6 +1,5 @@
 package service;
 
-import exception.ServerErrorExcetipn;
 import http.core.HttpRequest;
 import http.core.HttpResponse;
 import http.util.HttpMethod;
@@ -121,6 +120,27 @@ public class FileService implements ServerService {
     private void postFile(HttpRequest request, HttpResponse response) {
         String url = request.getUrl();
         String fileName = url.substring(url.indexOf("=") + 1);
+        String postfix;
+        String pattern = ".+/(.+)";
+        Matcher matcher = Pattern.compile(pattern).matcher(request.getHeader().getProperty(RequestHeader.CONTENT_TYPE));
+        matcher.find();
+        String type = matcher.group(1);
+        switch (type) {
+            case "javascript":
+                postfix = ".js";
+                break;
+            case "xml":
+            case "html":
+            case "json":
+                postfix = "." + type;
+                break;
+            case "plain":
+            case "x-www-form-urlencoded":
+            default:
+                postfix = ".txt";
+                break;
+        }
+
         try {
             byte[] buffer = new byte[1024];
             InputStream in = request.getRequestBodyStream();
