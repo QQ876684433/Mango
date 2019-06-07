@@ -142,13 +142,15 @@ public class FileService implements ServerService {
         }
 
         try {
-            byte[] buffer = new byte[1024];
             InputStream in = request.getRequestBodyStream();
-            OutputStream out = new FileOutputStream(ServerConfig.ROOT_PATH + "/" + fileName);
-            int len;
-            while ((len = in.read(buffer)) != -1) {
-                out.write(buffer, 0, len);
-            }
+            OutputStream out = new FileOutputStream(System.getProperty("user.dir") + "/server/" + fileName + postfix);
+            byte[] buffer = new byte[in.available()];
+//            int len;
+//            while ((len = in.read(buffer)) != -1) {
+//                out.write(buffer, 0, len);
+//            }
+            in.read(buffer);
+            out.write(buffer);
             response.setStatus(HttpStatus.CODE_200);
 
         } catch (IOException e) {
