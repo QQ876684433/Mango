@@ -13,6 +13,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * HTTP响应报文类
@@ -116,7 +117,9 @@ public class HttpResponse {
      * @return 响应实体文本内容
      */
     public String getResponseBodyText() {
-        if (this.responseBody == null) throw new NullPointerException("当前响应实体为空！");
+        if (this.responseBody == null) {
+            return "";
+        }
         return responseBody.getTextContent();
     }
 
@@ -126,7 +129,10 @@ public class HttpResponse {
      * @return 响应实体输入流
      */
     public InputStream getResponseBodyStream() {
-        if (this.responseBody == null) throw new NullPointerException("当前响应实体为空！");
+        if (this.responseBody == null) {
+            InputStream in = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
+            return in;
+        }
         return responseBody.getContent();
     }
 
