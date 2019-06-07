@@ -80,9 +80,21 @@ public class NIOServer {
                             SocketChannel clientChannel = (SocketChannel) key.channel();
 
                             if (key.isReadable()) {
+                                LongConnectionContext lcContext = null;
                                 //判断socket链接是否断开，以防finally块出错
                                 boolean closed = false;
+                                //默认时间单位为S
+                                int timeout = 0, max = 0;
                                 try {
+                                    lcContext = (LongConnectionContext) key.attachment();
+                                    //如果是短链接或者长链接到达要求，断开tcp链接
+                                    if (lcContext != null && (
+                                            lcContext.getRequestsServed() >= max
+                                                    || lcContext.getInitTime() + timeout * 1000L < new Date().getTime())) {
+                                        closed = true;
+                                        clientChannel.close();
+                                    }
+
                                     ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
                                     // (3) 读取数据以块为单位批量读取
                                     clientChannel.read(byteBuffer);
@@ -105,9 +117,6 @@ public class NIOServer {
 
                                     //判断长短连接
                                     HttpUtils httpUtils = new HttpRequestUtils(httpRequest);
-                                    //默认时间单位为S
-                                    int timeout = 0, max = 0;
-                                    LongConnectionContext lcContext = null;
 
                                     if (httpUtils.isLongConnection()) {
                                         Properties keepAlive = httpUtils.getLongConnectionDuration();
@@ -126,8 +135,7 @@ public class NIOServer {
 
                                     //如果是短链接或者长链接到达要求，断开tcp链接
                                     if (!httpUtils.isLongConnection() ||
-                                            lcContext.getRequestsServed() >= max ||
-                                            lcContext.getInitTime() + timeout * 1000L < new Date().getTime()) {
+                                            lcContext.getRequestsServed() >= max) {
                                         closed = true;
                                         clientChannel.close();
                                     }
