@@ -62,7 +62,7 @@ public class FileService implements ServerService {
         String pattern = "/file/(.+[.].+)";
         Matcher matcher = Pattern.compile(pattern).matcher(url);
         matcher.find();
-        String fileName = matcher.group();
+        String fileName = matcher.group(1);
         ModifiableFile fileCached = ServerConfig.staticFiles.stream()
                 .filter(f -> f.getName().equals(fileName))
                 .findFirst()
@@ -88,7 +88,8 @@ public class FileService implements ServerService {
         try {
             if (fileName.length() == 0)
                 throw new FileNotFoundException();
-            InputStream inputStream = new FileInputStream(new File(ServerConfig.ROOT_PATH + "/" + fileName));
+//            InputStream inputStream = new FileInputStream(new File(ServerConfig.ROOT_PATH + "/" + fileName));
+            InputStream inputStream = new FileInputStream(new File("../redirection-config.xml"));
             response.setResponseBody(inputStream);
             response.addHeader(
                     ResponseHeader.CONTENT_TYPE,

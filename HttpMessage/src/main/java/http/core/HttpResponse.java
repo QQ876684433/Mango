@@ -10,6 +10,8 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
 /**
@@ -61,6 +63,7 @@ public class HttpResponse {
 
     /**
      * 使用输入流构建HttpResponse对象
+     *
      * @param responseInputStream 响应报文输入流
      */
     public HttpResponse(InputStream responseInputStream) throws IOException {
@@ -75,8 +78,9 @@ public class HttpResponse {
 
     /**
      * 设置状态码，参考值
-     * @see HttpStatus
+     *
      * @param status 状态码
+     * @see HttpStatus
      */
     public void setStatus(int status) {
         // 自动设置status code对应的message
@@ -91,7 +95,8 @@ public class HttpResponse {
 
     /**
      * 支持链式调用
-     * @param key 首部键
+     *
+     * @param key   首部键
      * @param value 对应key的属性值
      * @return 返回HttpResponse实例本身，支持链式调用
      */
@@ -158,6 +163,7 @@ public class HttpResponse {
 
     /**
      * 解析输入流，生成HttpResponse对象
+     *
      * @param responseInputStream Http响应报文输入流
      */
     private void parse(InputStream responseInputStream) throws IOException {
@@ -181,20 +187,23 @@ public class HttpResponse {
 
         // 解析响应报文实体部分
         try {
-            this.responseBody = new HttpBody(
-                    this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                    responseInputStream
-            );
+            if (this.header.getProperty(RequestHeader.CONTENT_TYPE) != null)
+                this.responseBody = new HttpBody(
+                        this.header.getProperty(RequestHeader.CONTENT_TYPE),
+                        responseInputStream
+                );
         } catch (Exception e) {
             throw new HttpParseFailException("解析响应报文实体出错！");
         }
+        responseInputStream.close();
     }
 
     /**
      * 将HttpResponse对象写入到输出流中
+     *
      * @param outputStream 目的输出流
      */
-    public void writeTo(OutputStream outputStream){
+    public void writeTo(OutputStream outputStream) {
         PrintWriter pw = new PrintWriter(outputStream);
 
         // 输出请求报文起始行
@@ -214,11 +223,19 @@ public class HttpResponse {
             pw.print(this.getResponseBodyText());
         }
 
-//        pw.flush();
+        pw.flush();
+    }
+
+    public void writeTo(SocketChannel socketChannel) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(this.toString().getBytes());
+        System.out.println(this.toString());
+        int l = socketChannel.write(buffer);
+        System.out.println(l);
     }
 
     /**
      * 将HttpResponse对象解析成HTTP报文
+     *
      * @return HTTP报文字符串
      */
     @Override
