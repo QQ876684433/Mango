@@ -10,16 +10,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import model.DataStore;
 import model.ParamTuple;
-import org.apache.commons.lang3.ArrayUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * body_tab视图的控制器类
@@ -47,14 +43,18 @@ public class BodyTabController {
     private AnchorPane contentPane;
     @FXML
     private ToggleGroup tg1;
+    @FXML
+    private Button storeBtn;
+
+    private int[] selectedBtn = DataStore.bodySelectedBtn;
 
     @FXML
     private void initialize() {
         noneBtn.setSelected(true);
         onSelectNone();
+        storeBtn.setVisible(false);
 
         noneBtn.setOnAction(event -> {
-            rawType.setVisible(false);
             onSelectNone();
         });
 
@@ -84,6 +84,61 @@ public class BodyTabController {
             double width = newValue.length() < 5 ? 65 : (newValue.length() < 30 ? newValue.length() * 10 : newValue.length() * 8);
             rawType.setPrefWidth(width);
         });
+
+        storeBtn.setOnAction(event -> {
+            Node node;
+            switch (selectedBtn[0]) {
+                case 2:
+                    node = contentPane.getChildren().get(0);
+                    DataStore.getFormData().removeIf(o -> true);
+                    DataStore.getFormData().addAll(((TableView<ParamTuple>) node).getItems());
+                    break;
+                case 3:
+                    node = contentPane.getChildren().get(0);
+                    DataStore.getUrlEncoded().removeIf(o -> true);
+                    DataStore.getUrlEncoded().addAll(((TableView<ParamTuple>) node).getItems());
+                    break;
+                case 4:
+                    node = contentPane.getChildren().get(0);
+                    DataStore.setRaw(((TextArea) node).getText());
+                    DataStore.setRawType(rawType.getValue());
+                    break;
+                case 5:
+                    node = contentPane.getChildren().get(1);
+                    DataStore.setFilePath(((TextField) node).getText());
+                    break;
+                default:
+                    break;
+            }
+
+        });
+
+
+        tg1.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            switch (((RadioButton) tg1.getSelectedToggle()).getText()) {
+                case "none":
+                    selectedBtn[0] = 1;
+                    break;
+                case "form-data":
+                    selectedBtn[0] = 2;
+                    break;
+                case "x-www-form-urlencoded":
+                    selectedBtn[0] = 3;
+                    break;
+                case "raw":
+                    selectedBtn[0] = 4;
+                    break;
+                case "binary":
+                    selectedBtn[0] = 5;
+                    break;
+                default:
+                    selectedBtn[0] = 0;
+                    break;
+            }
+
+            storeBtn.setVisible(!((RadioButton) tg1.getSelectedToggle()).getText().equals("none"));
+        });
+
 
     }
 
@@ -121,9 +176,11 @@ public class BodyTabController {
     private void onSelectRaw() {
         TextArea ta = new TextArea();
         ta.setLayoutX(1);
-        ta.setLayoutY(39);
-        ta.setPrefHeight(277);
+        ta.setLayoutY(30);
+        ta.setPrefHeight(230);
         ta.setPrefWidth(816);
+        updateContent(ta);
+
         updateContent(ta);
     }
 
@@ -173,139 +230,6 @@ public class BodyTabController {
     private void addContent(Node... node) {
         ObservableList<Node> children = contentPane.getChildren();
         children.addAll(Arrays.asList(node));
-    }
-
-    public String getContentType() {
-//        if (noneBtn.isSelected())
-//            return "text/plain";
-//        else if (formDataBtn.isSelected())
-//            return "multipart/form-data";
-//        else if (urlEncodedBtn.isSelected())
-//            return "application/x-www-form-urlencoded";
-//        else if (rawBtn.isSelected()) {
-//            if ("Text".equals(rawType.getValue())) {
-//                return "application/x-www-form-urlencoded";
-//            } else {
-//                String value = rawType.getValue();
-//                return value.substring(value.indexOf("(") + 1, value.indexOf(")"));
-//            }
-//        } else if (binaryBtn.isSelected()) {
-//            return "text/plain";
-//        }
-
-        switch (((RadioButton) tg1.getSelectedToggle()).getText()) {
-            case "none":
-                return "text/plain";
-            case "form-data":
-                return "multipart/form-data";
-            case "x-www-form-urlencoded":
-                return "application/x-www-form-urlencoded";
-            case "raw":
-                if ("Text".equals(rawType.getValue())) {
-                    return "application/x-www-form-urlencoded";
-                } else {
-                    String value = rawType.getValue();
-                    return value.substring(value.indexOf("(") + 1, value.indexOf(")"));
-                }
-            case "binary":
-                return "text/plain";
-            default:
-                return "";
-
-
-        }
-    }
-
-    public byte[] getContent() {
-//        if (noneBtn.isSelected()) {
-//            return new byte[0];
-//        } else if (formDataBtn.isSelected()) {
-//            //TODO 未实现同时上传文本与文件
-//            List<ParamTuple> formUnits = getMapTableContent();
-//            return paramTuple2Bytes(formUnits);
-//        } else if (urlEncodedBtn.isSelected()) {
-//            List<ParamTuple> rows = getMapTableContent();
-//            return paramTuple2Bytes(rows);
-//        } else if (rawBtn.isSelected()) {
-//            TextArea textArea = (TextArea) contentPane.getChildren().get(0);
-//            return textArea.getText().getBytes();
-//        } else if (binaryBtn.isSelected()) {
-//            TextField filePath = (TextField) contentPane.getChildren().get(1);
-//            byte[] buffer = null;
-//
-//            try {
-//                File file = new File(filePath.getText());
-//                FileInputStream fis = new FileInputStream(file);
-//                ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
-//                byte[] content = new byte[1000];
-//                int len;
-//                while ((len = fis.read(content)) != -1) {
-//                    bos.write(content, 0, len);
-//                }
-//                fis.close();
-//                bos.close();
-//                buffer = bos.toByteArray();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return buffer;
-//
-//        }
-        switch (((RadioButton) tg1.getSelectedToggle()).getText()) {
-            case "none":
-                return new byte[0];
-            case "form-data":
-                //TODO 未实现同时上传文本与文件
-                List<ParamTuple> formUnits = getMapTableContent();
-                return paramTuple2Bytes(formUnits);
-            case "x-www-form-urlencoded":
-                List<ParamTuple> rows = getMapTableContent();
-                return paramTuple2Bytes(rows);
-            case "raw":
-                TextArea textArea = (TextArea) contentPane.getChildren().get(0);
-                return textArea.getText().getBytes();
-            case "binary":
-                TextField filePath = (TextField) contentPane.getChildren().get(1);
-                byte[] buffer = null;
-
-                try {
-                    File file = new File(filePath.getText());
-                    FileInputStream fis = new FileInputStream(file);
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
-                    byte[] content = new byte[1000];
-                    int len;
-                    while ((len = fis.read(content)) != -1) {
-                        bos.write(content, 0, len);
-                    }
-                    fis.close();
-                    bos.close();
-                    buffer = bos.toByteArray();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return buffer;
-            default:
-                return new byte[0];
-        }
-
-    }
-
-    private List<ParamTuple> getMapTableContent() {
-        AnchorPane mapTablePane = (AnchorPane) contentPane.getChildren().get(0);
-        for (Node node : mapTablePane.getChildren()) {
-            if (node instanceof TableView) {
-                return ((TableView<ParamTuple>) node).getItems();
-            }
-        }
-        return new ArrayList<>();
-    }
-
-    private byte[] paramTuple2Bytes(List<ParamTuple> list) {
-        final byte[][] bytes = {new byte[0]};
-        list.forEach(t -> {
-            bytes[0] = ArrayUtils.addAll(bytes[0], (t.getKey() + "=" + t.getValue()).getBytes());
-        });
-        return bytes[0];
     }
 
 
