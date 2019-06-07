@@ -28,7 +28,7 @@ public class OkHandler implements BaseHandler {
     @Override
     public Map<String, Object> handleStatus(HttpResponse response)  {
         //TODO: GET,POST 请求分析数据类型(content-Type),缓存本地,给出路径展示;
-        switch (response.getHeader().getProperty("Content-Type")) {
+        switch (response.getHeader().getProperty(ResponseHeader.CONTENT_TYPE)) {
             case "text/plain":
                 this.fileTransformer = new TextTransformer();
                 break;

@@ -98,9 +98,11 @@ public class FileService implements ServerService {
             e.printStackTrace();
             System.out.println("文件不存在");
             response.setStatus(HttpStatus.CODE_404);
+            response.addHeader(ResponseHeader.CONTENT_LENGTH, "0");
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpStatus.CODE_500);
+            response.addHeader(ResponseHeader.CONTENT_LENGTH, "0");
         }
     }
 
@@ -109,9 +111,12 @@ public class FileService implements ServerService {
         if (fileName.endsWith(".jpg") ||
                 fileName.endsWith(".png")) {
             response.addHeader(ResponseHeader.CONTENT_TYPE, "image/png");
+            response.addHeader(ResponseHeader.CACHE_CONTROLL, "no-cache");
         } else if (fileName.startsWith("musics")) {
             response.addHeader(ResponseHeader.CONTENT_TYPE, "audio/mp3");
+            response.addHeader(ResponseHeader.CACHE_CONTROLL, "no-cache");
         } else {
+            response.addHeader(ResponseHeader.CACHE_CONTROLL, "max-age=60");
             response.addHeader(ResponseHeader.CONTENT_TYPE, "text/plain");
         }
     }
@@ -144,7 +149,8 @@ public class FileService implements ServerService {
         try {
             InputStream in = request.getRequestBodyStream();
             OutputStream out = new FileOutputStream(System.getProperty("user.dir") + "/server/" + fileName + postfix);
-            byte[] buffer = new byte[in.available()];
+            int length = in.available();
+            byte[] buffer = new byte[length];
 //            int len;
 //            while ((len = in.read(buffer)) != -1) {
 //                out.write(buffer, 0, len);
@@ -152,10 +158,11 @@ public class FileService implements ServerService {
             in.read(buffer);
             out.write(buffer);
             response.setStatus(HttpStatus.CODE_200);
-
+            response.addHeader(ResponseHeader.CONTENT_LENGTH, length + "");
         } catch (IOException e) {
             e.printStackTrace();
             response.setStatus(HttpStatus.CODE_500);
+            response.addHeader(ResponseHeader.CONTENT_LENGTH, "0");
         }
     }
 
