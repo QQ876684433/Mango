@@ -200,7 +200,7 @@ public class HttpRequest {
 
         // 输出请求首部
         String headers = this.getHeader().getHeaderText();
-        pw.println(headers);
+        pw.print(headers);
 
         // 输出空行
         pw.println();

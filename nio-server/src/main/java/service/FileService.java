@@ -164,10 +164,12 @@ public class FileService implements ServerService {
             out.write(buffer);
             response.setStatus(HttpStatus.CODE_200);
             response.addHeader(ResponseHeader.CONTENT_LENGTH, length + "");
+            response.addHeader(ResponseHeader.CONTENT_TYPE, "text/plain");
         } catch (IOException e) {
             e.printStackTrace();
             response.setStatus(HttpStatus.CODE_500);
             response.addHeader(ResponseHeader.CONTENT_LENGTH, "0");
+            response.addHeader(ResponseHeader.CONTENT_TYPE, "text/plain");
         }
     }
 

@@ -108,7 +108,20 @@ public class NIOServer {
                                     clientChannel.read(byteBuffer);
                                     byteBuffer.flip();
 
-                                    System.out.println(new String(byteBuffer.array(), Charset.defaultCharset()));
+                                    byte[] bytes = byteBuffer.array();
+                                    int index = 0;
+                                    for (int i = 0; i < bytes.length; i++) {
+                                        if (bytes[i] == -1){
+                                            index=i;
+                                            break;
+                                        }
+                                    }
+                                    if (index!=0) {
+                                        byte[] temp = new byte[index];
+                                        System.arraycopy(bytes, 0, temp, 0, index);
+                                        bytes = temp;
+                                    }
+                                    System.out.println(new String(bytes, Charset.defaultCharset()));
                                     // 拿到客户端发来的请求
                                     HttpRequest httpRequest = new HttpRequest(new ByteArrayInputStream(byteBuffer.array()));
 
