@@ -90,11 +90,9 @@ public class FileService implements ServerService {
                 throw new FileNotFoundException();
 //            InputStream inputStream = new FileInputStream(new File(ServerConfig.ROOT_PATH + "/" + fileName));
             InputStream inputStream = FileService.class.getClassLoader().getResourceAsStream(fileName);
-            response.addHeader(ResponseHeader.CONTENT_LENGTH, ""+inputStream.available());
+            response.addHeader(ResponseHeader.CONTENT_LENGTH, "" + inputStream.available());
             // TODO add content-type
-            response.addHeader(
-                    ResponseHeader.CONTENT_TYPE,
-                    "text/plain");
+            setContentType(response, fileName);
             response.setResponseBody(inputStream);
             response.setStatus(HttpStatus.CODE_200);
         } catch (FileNotFoundException e) {
@@ -104,6 +102,17 @@ public class FileService implements ServerService {
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpStatus.CODE_500);
+        }
+    }
+
+    // 根据文件名设置ContentType
+    private void setContentType(HttpResponse response, String fileName) {
+        if (fileName.startsWith("imgs")) {
+            response.addHeader(ResponseHeader.CONTENT_TYPE, "image/png");
+        } else if (fileName.startsWith("musics")) {
+            response.addHeader(ResponseHeader.CONTENT_TYPE, "audio/mp3");
+        } else {
+            response.addHeader(ResponseHeader.CONTENT_TYPE, "text/plain");
         }
     }
 
