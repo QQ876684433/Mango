@@ -23,7 +23,6 @@ import view.Prompt;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 import static util.ParamTupleTableHelper.*;
 
@@ -162,7 +161,7 @@ public class RequestViewController {
             if (cachedFile != null && !cachedFile.isExpired()) {
                 responseController.setBody(clientCache.getFileInputStream(cachedFile.getFileName()));
             } else {
-                responseController.bindResponse(response);
+                responseController.bindResponse(getUri(), response);
                 //可以继续使用缓存文件
                 if (response.getStatus() == HttpStatus.CODE_304)
                     responseController.setBody(clientCache.getFileInputStream(cachedFile.getFileName()));

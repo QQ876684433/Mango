@@ -72,7 +72,7 @@ public class HttpService {
                 request.setUrl(targetUri + getParamString(url));
                 request.writeTo(s.getOutputStream());
                 response = getResponseFromSocket(s);
-                displayResponse(response);
+//                displayResponse(response);
             }
 
 
@@ -102,7 +102,7 @@ public class HttpService {
     }
 
     private void displayResponse(HttpResponse response) {
-        MessageView.display("response", resMap2String(StatusHandler.handle(response)));
+        MessageView.display("response for redirect", resMap2String(StatusHandler.handle(response)));
     }
 
     private HttpResponse getResponseFromSocket(Socket s) throws IOException {

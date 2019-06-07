@@ -45,6 +45,8 @@ public class BodyTabController {
     private ChoiceBox<String> rawType;
     @FXML
     private AnchorPane contentPane;
+    @FXML
+    private ToggleGroup tg1;
 
     @FXML
     private void initialize() {
@@ -174,62 +176,118 @@ public class BodyTabController {
     }
 
     public String getContentType() {
-        if (noneBtn.isSelected())
-            return "text/plain";
-        else if (formDataBtn.isSelected())
-            return "multipart/form-data";
-        else if (urlEncodedBtn.isSelected())
-            return "application/x-www-form-urlencoded";
-        else if (rawBtn.isSelected()) {
-            if ("Text".equals(rawType.getValue())) {
-                return "application/x-www-form-urlencoded";
-            } else {
-                String value = rawType.getValue();
-                return value.substring(value.indexOf("(") + 1, value.indexOf(")"));
-            }
-        } else if (binaryBtn.isSelected()) {
-            return "text/plain";
-        }
-        return "";
+//        if (noneBtn.isSelected())
+//            return "text/plain";
+//        else if (formDataBtn.isSelected())
+//            return "multipart/form-data";
+//        else if (urlEncodedBtn.isSelected())
+//            return "application/x-www-form-urlencoded";
+//        else if (rawBtn.isSelected()) {
+//            if ("Text".equals(rawType.getValue())) {
+//                return "application/x-www-form-urlencoded";
+//            } else {
+//                String value = rawType.getValue();
+//                return value.substring(value.indexOf("(") + 1, value.indexOf(")"));
+//            }
+//        } else if (binaryBtn.isSelected()) {
+//            return "text/plain";
+//        }
 
+        switch (((RadioButton) tg1.getSelectedToggle()).getText()) {
+            case "none":
+                return "text/plain";
+            case "form-data":
+                return "multipart/form-data";
+            case "x-www-form-urlencoded":
+                return "application/x-www-form-urlencoded";
+            case "raw":
+                if ("Text".equals(rawType.getValue())) {
+                    return "application/x-www-form-urlencoded";
+                } else {
+                    String value = rawType.getValue();
+                    return value.substring(value.indexOf("(") + 1, value.indexOf(")"));
+                }
+            case "binary":
+                return "text/plain";
+            default:
+                return "";
+
+
+        }
     }
 
     public byte[] getContent() {
-        if (noneBtn.isSelected()) {
-            return new byte[0];
-        } else if (formDataBtn.isSelected()) {
-            //TODO 未实现同时上传文本与文件
-            List<ParamTuple> formUnits = getMapTableContent();
-            return paramTuple2Bytes(formUnits);
-        } else if (urlEncodedBtn.isSelected()) {
-            List<ParamTuple> rows = getMapTableContent();
-            return paramTuple2Bytes(rows);
-        } else if (rawBtn.isSelected()) {
-            TextArea textArea = (TextArea) contentPane.getChildren().get(0);
-            return textArea.getText().getBytes();
-        } else if (binaryBtn.isSelected()) {
-            TextField filePath = (TextField) contentPane.getChildren().get(1);
-            byte[] buffer = null;
+//        if (noneBtn.isSelected()) {
+//            return new byte[0];
+//        } else if (formDataBtn.isSelected()) {
+//            //TODO 未实现同时上传文本与文件
+//            List<ParamTuple> formUnits = getMapTableContent();
+//            return paramTuple2Bytes(formUnits);
+//        } else if (urlEncodedBtn.isSelected()) {
+//            List<ParamTuple> rows = getMapTableContent();
+//            return paramTuple2Bytes(rows);
+//        } else if (rawBtn.isSelected()) {
+//            TextArea textArea = (TextArea) contentPane.getChildren().get(0);
+//            return textArea.getText().getBytes();
+//        } else if (binaryBtn.isSelected()) {
+//            TextField filePath = (TextField) contentPane.getChildren().get(1);
+//            byte[] buffer = null;
+//
+//            try {
+//                File file = new File(filePath.getText());
+//                FileInputStream fis = new FileInputStream(file);
+//                ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+//                byte[] content = new byte[1000];
+//                int len;
+//                while ((len = fis.read(content)) != -1) {
+//                    bos.write(content, 0, len);
+//                }
+//                fis.close();
+//                bos.close();
+//                buffer = bos.toByteArray();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return buffer;
+//
+//        }
+        switch (((RadioButton) tg1.getSelectedToggle()).getText()) {
+            case "none":
+                return new byte[0];
+            case "form-data":
+                //TODO 未实现同时上传文本与文件
+                List<ParamTuple> formUnits = getMapTableContent();
+                return paramTuple2Bytes(formUnits);
+            case "x-www-form-urlencoded":
+                List<ParamTuple> rows = getMapTableContent();
+                return paramTuple2Bytes(rows);
+            case "raw":
+                TextArea textArea = (TextArea) contentPane.getChildren().get(0);
+                return textArea.getText().getBytes();
+            case "binary":
+                TextField filePath = (TextField) contentPane.getChildren().get(1);
+                byte[] buffer = null;
 
-            try {
-                File file = new File(filePath.getText());
-                FileInputStream fis = new FileInputStream(file);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
-                byte[] content = new byte[1000];
-                int len;
-                while ((len = fis.read(content)) != -1) {
-                    bos.write(content, 0, len);
+                try {
+                    File file = new File(filePath.getText());
+                    FileInputStream fis = new FileInputStream(file);
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+                    byte[] content = new byte[1000];
+                    int len;
+                    while ((len = fis.read(content)) != -1) {
+                        bos.write(content, 0, len);
+                    }
+                    fis.close();
+                    bos.close();
+                    buffer = bos.toByteArray();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                fis.close();
-                bos.close();
-                buffer = bos.toByteArray();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return buffer;
-
+                return buffer;
+            default:
+                return new byte[0];
         }
-        return new byte[0];
+
     }
 
     private List<ParamTuple> getMapTableContent() {
