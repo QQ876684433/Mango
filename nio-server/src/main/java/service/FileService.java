@@ -88,9 +88,8 @@ public class FileService implements ServerService {
         try {
             if (fileName.length() == 0)
                 throw new FileNotFoundException();
-//            InputStream inputStream = new FileInputStream(new File(ServerConfig.ROOT_PATH + "/" + fileName));
-            InputStream inputStream = FileService.class.getClassLoader().getResourceAsStream(fileName);
-//            InputStream inputStream = new FileInputStream("/home/steve/IdeaProjects/MasterJava/Mango/HttpMessage/src/main/resources/imgs/avatar.jpg");
+//            InputStream inputStream = FileService.class.getClassLoader().getResourceAsStream(fileName);
+            InputStream inputStream = new FileInputStream(System.getProperty("user.dir") + "/data/" + fileName);
             response.addHeader(ResponseHeader.CONTENT_LENGTH, "" + inputStream.available());
             // TODO add content-type
             setContentType(response, fileName);
@@ -136,5 +135,9 @@ public class FileService implements ServerService {
             e.printStackTrace();
             response.setStatus(HttpStatus.CODE_500);
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(System.getProperty("user.dir"));
     }
 }
