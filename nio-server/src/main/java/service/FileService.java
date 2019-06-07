@@ -4,13 +4,12 @@ import http.core.HttpRequest;
 import http.core.HttpResponse;
 import http.util.HttpMethod;
 import http.util.HttpStatus;
+import http.util.handler.DateUtils;
 import http.util.header.RequestHeader;
 import http.util.header.ResponseHeader;
 import model.ModifiableFile;
 
 import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,22 +65,16 @@ public class FileService implements ServerService {
                 .filter(f -> f.getName().equals(fileName))
                 .findFirst()
                 .orElse(null);
-        String rawDate = request.getHeader().getProperty(RequestHeader.IF_MODIFIED_SINCE);
-        SimpleDateFormat modifyFormat = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss");
-        if (fileCached != null && rawDate != null) {
-            String ifModifiedSince = rawDate.substring(0, rawDate.lastIndexOf(" "));
+        String ifModifiedSince = request.getHeader().getProperty(RequestHeader.IF_MODIFIED_SINCE);
+//        SimpleDateFormat modifyFormat = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss");
+        if (fileCached != null && ifModifiedSince != null) {
             //TODO 还有缓存什么的乱七八糟的东西
-            try {
-                Date sinceDate = modifyFormat.parse(ifModifiedSince);
-                if (fileCached.getLastModifiedTime().after(sinceDate)) {
-                    response.addHeader(ResponseHeader.LAST_MODIFIED, modifyFormat.format(fileCached.getLastModifiedTime()) + " GMT");
-                } else {
-                    response.setStatus(HttpStatus.CODE_304);
-                    return;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-                response.setStatus(HttpStatus.CODE_500);
+            Date sinceDate = DateUtils.standardStrToDate(ifModifiedSince);
+            if (fileCached.getLastModifiedTime().after(sinceDate)) {
+                response.addHeader(ResponseHeader.LAST_MODIFIED, DateUtils.dateToStrDay(fileCached.getLastModifiedTime()));
+            } else {
+                response.setStatus(HttpStatus.CODE_304);
+                return;
             }
         }
         try {

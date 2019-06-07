@@ -1,13 +1,12 @@
 package http;
 
 import http.core.HttpResponse;
+import http.util.handler.DateUtils;
 import http.util.header.ResponseHeader;
 import lombok.Getter;
 import model.CachedFile;
-import util.HttpDateUtil;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,21 +38,24 @@ public class ClientCache {
 
         InputStream in = response.getResponseBodyStream();
 //        String file = uri.substring(0, uri.indexOf("?"));
-        String file = uri;
+        File file = new File(cachePath + (uri.startsWith("/") ? "" : "/") + uri);
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
         try {
+            file.createNewFile();
             byte[] buffer = new byte[1024];
-            OutputStream out = new FileOutputStream(cachePath + (file.startsWith("/") ? "" : "/") + file);
+            OutputStream out = new FileOutputStream(file);
             int len;
             while ((len = in.read(buffer)) != -1) {
                 out.write(buffer, 0, len);
             }
 
             CachedFile cachedFile = new CachedFile();
-            cachedFile.setFileName(file);
-            cachedFile.setETag(response.getHeader().getProperty(ResponseHeader.ETAG));
-            cachedFile.setExpires(HttpDateUtil.parse(response.getHeader().getProperty(ResponseHeader.EXPIRES)));
-            cachedFile.setGainedTime(HttpDateUtil.parse(response.getHeader().getProperty(ResponseHeader.DATE)));
-            cachedFile.setLastModifiedTime(HttpDateUtil.parse(response.getHeader().getProperty(ResponseHeader.LAST_MODIFIED)));
+            cachedFile.setFileName(uri);
+            cachedFile.setGainedTime(DateUtils.standardStrToDate(response.getHeader().getProperty(ResponseHeader.DATE)));
+            String lastModified = response.getHeader().getProperty(ResponseHeader.LAST_MODIFIED);
+            cachedFile.setLastModifiedTime(lastModified == null ? cachedFile.getGainedTime() : DateUtils.standardStrToDate(lastModified));
             cachedFile.setContentLocation(response.getHeader().getProperty(ResponseHeader.CONTENT_LOCATION));
             String cacheControl = response.getHeader().getProperty(ResponseHeader.CACHE_CONTROLL);
             cachedFile.setMaxAge(Integer.parseInt(cacheControl.substring(cacheControl.indexOf("=") + 1)));
@@ -61,8 +63,6 @@ public class ClientCache {
             cachedFiles.add(cachedFile);
 
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
