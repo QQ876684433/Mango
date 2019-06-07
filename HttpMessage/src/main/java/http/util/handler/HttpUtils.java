@@ -1,8 +1,10 @@
 package http.util.handler;
 
 import http.core.Header;
+import http.util.header.CommonHeader;
 import http.util.header.ResponseHeader;
 
+import java.util.Date;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,5 +52,15 @@ abstract public class HttpUtils {
             conProps.put(KEEP_ALIVE_MAX, matcher.group(2));
         }
         return conProps;
+    }
+
+    /**
+     * 获取报文的日期
+     *
+     * @return Date
+     */
+    public Date getMessageDate() {
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        return DateUtils.strToDate(header.getProperty(CommonHeader.DATE), pattern);
     }
 }

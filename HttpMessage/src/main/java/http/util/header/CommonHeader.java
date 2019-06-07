@@ -5,7 +5,7 @@ package http.util.header;
  *
  * @author steve
  */
-interface CommonHeader {
+public interface CommonHeader {
     // 通用的信息性首部
     String CONNECTION = "Connection";
     String KEEP_ALIVE = "Keep-Alive";

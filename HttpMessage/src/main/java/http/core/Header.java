@@ -1,12 +1,15 @@
 package http.core;
 
 import http.exception.HttpHeaderParseFailException;
+import http.util.handler.DateUtils;
+import http.util.header.CommonHeader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -21,6 +24,7 @@ public class Header {
 
     Header() {
         this.headers = new HashMap<>();
+        this.headers.put(CommonHeader.DATE, DateUtils.dateToStrDay(new Date()));
     }
 
     /**
