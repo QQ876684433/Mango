@@ -4,7 +4,6 @@ import http.core.HttpRequest;
 import http.core.HttpResponse;
 import http.util.HttpStatus;
 import http.util.header.ResponseHeader;
-import jdk.management.resource.internal.inst.SocketInputStreamRMHooks;
 import service.StatusHandler;
 import util.SocketHolder;
 import view.MessageView;
@@ -54,7 +53,7 @@ public class HttpService {
 
             //查询重定向表
             if (redirectMap.keySet().contains(originalUri)) {
-                request.setUrl(redirectMap.get(originalUri) + url.substring(url.indexOf("?")));
+                request.setUrl(redirectMap.get(originalUri) + getParamString(url));
             }
 
             request.writeTo(s.getOutputStream());
@@ -103,11 +102,7 @@ public class HttpService {
     }
 
     private void displayResponse(HttpResponse response) {
-        try {
-            MessageView.display("response", resMap2String(StatusHandler.handle(response)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MessageView.display("response", resMap2String(StatusHandler.handle(response)));
     }
 
     private HttpResponse getResponseFromSocket(Socket s) throws IOException {

@@ -21,12 +21,20 @@ public class LongConnectionContext {
     //tcp连接建立时间, 标准: UTC
     private long initTime;
 
+    @Getter
+    private long lastActiveTime;
+
     public LongConnectionContext() {
         requestsServed = 0;
         initTime = new Date().getTime();
+        lastActiveTime = initTime;
     }
 
     public void addRequestsServedCount() {
         requestsServed++;
+    }
+
+    public void freshLastActiveTime() {
+        lastActiveTime = new Date().getTime();
     }
 }
