@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * HTTP响应报文类
@@ -193,15 +194,13 @@ public class HttpResponse {
 
         // 解析响应报文实体部分
         try {
-//            if (this.header.getProperty(RequestHeader.CONTENT_TYPE) != null)
-                this.responseBody = new HttpBody(
-                        this.header.getProperty(RequestHeader.CONTENT_TYPE),
-                        responseInputStream
-                );
+            this.responseBody = new HttpBody(
+                    this.header.getProperty(RequestHeader.CONTENT_TYPE),
+                    responseInputStream
+            );
         } catch (Exception e) {
             throw new HttpParseFailException("解析响应报文实体出错！");
         }
-//        responseInputStream.close();
     }
 
     /**
@@ -219,7 +218,7 @@ public class HttpResponse {
 
         // 输出请求首部
         String headers = this.getHeader().getHeaderText();
-        pw.println(headers);
+        pw.print(headers);
 
         // 输出空行
         pw.println();

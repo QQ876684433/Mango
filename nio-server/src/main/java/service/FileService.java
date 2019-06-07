@@ -90,6 +90,7 @@ public class FileService implements ServerService {
                 throw new FileNotFoundException();
 //            InputStream inputStream = new FileInputStream(new File(ServerConfig.ROOT_PATH + "/" + fileName));
             InputStream inputStream = FileService.class.getClassLoader().getResourceAsStream(fileName);
+//            InputStream inputStream = new FileInputStream("/home/steve/IdeaProjects/MasterJava/Mango/HttpMessage/src/main/resources/imgs/avatar.jpg");
             response.addHeader(ResponseHeader.CONTENT_LENGTH, "" + inputStream.available());
             // TODO add content-type
             setContentType(response, fileName);

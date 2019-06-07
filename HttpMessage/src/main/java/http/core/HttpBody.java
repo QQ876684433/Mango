@@ -33,7 +33,6 @@ public class HttpBody {
     }
 
     HttpBody(String contentType, InputStream content) throws Exception {
-//        if (contentType.isEmpty()) throw new Exception("contentType不能为空！");
         if (null == contentType) contentType = "text/plain; charset=utf-8";
 
         this.mediaType = new MediaType(contentType);
@@ -55,18 +54,20 @@ public class HttpBody {
      * @param is
      */
     void setContent(InputStream is) {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer;
         try {
-            byte[] buffer = new byte[is.available()];
-            int len = -1;
-            len = is.read(buffer);
-//            while ((len = is.read(buffer)) != -1) {
-            output.write(buffer, 0, len);
-//            }
+            buffer = new byte[is.available()];
+            int len  = is.read(buffer);
+            this.content = new byte[len];
+
+//            FileOutputStream fos = new FileOutputStream("/home/steve/IdeaProjects/MasterJava/Mango/HttpMessage/mutiMedia/a.jpg");
+//            fos.write(buffer);
+//            fos.flush();
+
+            System.arraycopy(buffer, 0, this.content, 0, len);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.content = output.toByteArray();
     }
 
     /**

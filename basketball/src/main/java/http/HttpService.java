@@ -46,7 +46,7 @@ public class HttpService {
             throw new IOException("socket链接建立失败");
         }
 
-        HttpResponse response = new HttpResponse();
+        HttpResponse response;
         try {
             String url = request.getUrl();
             String originalUri = getOriginalUri(url);
@@ -111,8 +111,7 @@ public class HttpService {
             //如果一直为0客户端会卡死
             if (in.available() == 0)
                 continue;
-            HttpResponse response = new HttpResponse(in);
-            return response;
+            return new HttpResponse(in);
         }
 
     }
