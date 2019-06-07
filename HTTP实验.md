@@ -376,3 +376,24 @@ $$
 
 ### 4. 实现结果
 
+- 图片文件(`img`)传输
+
+![body.png](https://github.com/CaesarRoot/Mango/blob/master/body.png?raw=true)
+
+
+
+![demo avatar.png](https://github.com/CaesarRoot/Mango/blob/master/demo%20avatar.png?raw=true)
+
+- 普通文本文件传输 `text/plain`
+
+
+
+
+
+- 音频文件传输
+
+
+
+
+
+- 视频文件传输
