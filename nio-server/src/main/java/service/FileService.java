@@ -88,7 +88,7 @@ public class FileService implements ServerService {
             if (fileName.length() == 0)
                 throw new FileNotFoundException();
 //            InputStream inputStream = FileService.class.getClassLoader().getResourceAsStream(fileName);
-            InputStream inputStream = new FileInputStream(System.getProperty("user.dir") + "/data/" + fileName);
+            InputStream inputStream = new FileInputStream(System.getProperty("user.dir") + "/server/" + fileName);
             response.addHeader(ResponseHeader.CONTENT_LENGTH, "" + inputStream.available());
             // TODO add content-type
             setContentType(response, fileName);
