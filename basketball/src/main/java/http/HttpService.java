@@ -103,11 +103,7 @@ public class HttpService {
     }
 
     private void displayResponse(HttpResponse response) {
-        try {
-            MessageView.display("response", resMap2String(StatusHandler.handle(response)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MessageView.display("response", resMap2String(StatusHandler.handle(response)));
     }
 
     private HttpResponse getResponseFromSocket(Socket s) throws IOException {
