@@ -18,7 +18,7 @@ public class StatusHandler {
      * 提供其他端调用的接口
      * StatusHandler.handle(HttpResponse response)
      */
-    public static Map<String, ?> handle(HttpResponse response) throws IOException {
+    public static Map<String, ?> handle(HttpResponse response){
         switch (response.getStatus()) {
             case 200:
                 handler = new OkHandler();
