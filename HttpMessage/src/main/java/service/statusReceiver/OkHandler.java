@@ -6,14 +6,9 @@ import http.util.header.ResponseHeader;
 import service.FileUtils;
 import service.fileTrans.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-
 public class OkHandler implements BaseHandler {
     private FileTransformer fileTransformer;
 
