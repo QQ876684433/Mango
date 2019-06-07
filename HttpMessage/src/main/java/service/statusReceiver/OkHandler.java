@@ -30,6 +30,8 @@ public class OkHandler implements BaseHandler {
         //TODO: GET,POST 请求分析数据类型(content-Type),缓存本地,给出路径展示;
         switch (response.getHeader().getProperty(ResponseHeader.CONTENT_TYPE)) {
             case "text/plain":
+            case "text/css":
+            case "text/html":
                 this.fileTransformer = new TextTransformer();
                 break;
             case "image/png":

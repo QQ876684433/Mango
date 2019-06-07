@@ -117,7 +117,12 @@ public class FileService implements ServerService {
             response.addHeader(ResponseHeader.CACHE_CONTROLL, "no-cache");
         } else {
             response.addHeader(ResponseHeader.CACHE_CONTROLL, "max-age=60");
-            response.addHeader(ResponseHeader.CONTENT_TYPE, "text/plain");
+            if (fileName.endsWith(".css"))
+                response.addHeader(ResponseHeader.CONTENT_TYPE, "text/css");
+            else if (fileName.endsWith(".html"))
+                response.addHeader(ResponseHeader.CONTENT_TYPE, "text/html");
+            else
+                response.addHeader(ResponseHeader.CONTENT_TYPE, "text/plain");
         }
     }
 
@@ -166,7 +171,4 @@ public class FileService implements ServerService {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(System.getProperty("user.dir"));
-    }
 }
