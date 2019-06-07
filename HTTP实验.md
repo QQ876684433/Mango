@@ -54,6 +54,19 @@ _____
 
 ##### 1.4.1 http-message模块的组成
 
+![mango-httpmessage.png](https://github.com/CaesarRoot/Mango/blob/master/HttpMessage/src/main/resources/dependencies/mango-httpmessage.png?raw=true)
+
+$$
+总体模块依赖关系图
+$$
+
+
+![mango-httpmessage-http.png](https://github.com/CaesarRoot/Mango/blob/master/HttpMessage/src/main/resources/dependencies/mango-httpmessage-http.png?raw=true)
+$$
+http解析模块依赖关系图
+$$
+
+
 ###### 1.4.1.1 http包
 
 封装与解析 http 的请求与响应内容，提供接口给其他所有模块之间的调用
@@ -264,9 +277,19 @@ _____
 
 ![](https://i.loli.net/2019/06/07/5cfa209b5c35b72328.png)
 
-
+具体的解析内容涉及 `数据逻辑` 部分的内容。具体内容参见第二部分
 
 ###### 1.4.1.2 service包
+
+- 文件类型解析
+
+  实现对于 text/plainimage/png（.png文件）audio/mp3（.mp3文件）video/mpeg4（.mp4文件）类型文件的解析工作，在 `OkHandler` 中进行调用；如果服务端成功返回了 `200` 的响应码，并且为 `GET` 方法，那么就表明成功进行了一次资源获取。
+
+- 响应码解析
+
+  对于不同的响应码，给出不同的行为
+
+具体的解析内容涉及 `数据逻辑` 部分的内容。具体内容参见第二部分
 
 
 
@@ -285,10 +308,16 @@ _____
 
 
 
+
+
+
 ### 3. 流程说明
 
-###### 写完代码再加
+#### 3.1 资源说明与测试用例说明
+
+所有的资源文件存储于 `noi-server/src/main/resources`目录下，url请求基路径 `localhost:8080/file`
+
+
 
 ### 4. 实现结果
 
-###### 写完代码再加
