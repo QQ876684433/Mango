@@ -376,3 +376,20 @@ $$
 
 ### 4. 实现结果
 
+- 图片文件(`img`)传输
+
+![body.png](https://github.com/CaesarRoot/Mango/blob/master/body.png?raw=true)
+
+
+
+![demo avatar.png](https://github.com/CaesarRoot/Mango/blob/master/demo%20avatar.png?raw=true)
+
+- 普通文本文件传输 `text/plain`
+
+![](https://i.loli.net/2019/06/07/5cfa68492410394962.png)
+
+
+
+- 重定向状态码 `301`
+
+![200.png](https://github.com/CaesarRoot/Mango/blob/master/200.png?raw=true)
