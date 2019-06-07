@@ -97,7 +97,7 @@ public class NIOServer {
                                         // 处理请求
                                         HttpContext httpContext = new HttpContext();
                                         HttpResponse response = httpContext.processRequest(httpRequest);
-                                        response.writeTo(clientChannel.socket().getOutputStream());
+                                        response.writeTo(clientChannel);
                                     } catch (Exception e) {
                                         //handle处理请求过程中抛出的异常
                                         e.printStackTrace();
@@ -129,7 +129,7 @@ public class NIOServer {
                                             lcContext.getRequestsServed() >= max ||
                                             lcContext.getInitTime() + timeout * 1000L < new Date().getTime()) {
                                         closed = true;
-                                        clientChannel.socket().close();
+                                        clientChannel.close();
                                     }
 
                                 } catch (HttpParseFailException ignored) {
