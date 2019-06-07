@@ -55,12 +55,13 @@ public class HttpBody {
      */
     void setContent(InputStream is) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int len = -1;
         try {
-            while ((len = is.read(buffer)) != -1) {
+            byte[] buffer = new byte[is.available()];
+            int len = -1;
+            len = is.read(buffer);
+//            while ((len = is.read(buffer)) != -1) {
                 output.write(buffer, 0, len);
-            }
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         }

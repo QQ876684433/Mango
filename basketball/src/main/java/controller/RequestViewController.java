@@ -23,6 +23,7 @@ import view.Prompt;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.Socket;
 
 import static util.ParamTupleTableHelper.*;
 
