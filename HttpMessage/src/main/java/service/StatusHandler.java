@@ -3,6 +3,7 @@ package service;
 import http.core.HttpResponse;
 import service.statusReceiver.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -17,7 +18,7 @@ public class StatusHandler {
      * 提供其他端调用的接口
      * StatusHandler.handle(HttpResponse response)
      */
-    public static Map<String, ?> handle(HttpResponse response) {
+    public static Map<String, ?> handle(HttpResponse response) throws IOException {
         switch (response.getStatus()) {
             case 200:
                 handler = new OkHandler();
