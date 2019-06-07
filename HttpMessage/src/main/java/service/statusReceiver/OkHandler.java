@@ -28,7 +28,7 @@ public class OkHandler implements BaseHandler {
      * @return
      */
     @Override
-    public Map<String, Object> handleStatus(HttpResponse response) throws IOException {
+    public Map<String, Object> handleStatus(HttpResponse response)  {
         //TODO: GET,POST 请求分析数据类型(content-Type),缓存本地,给出路径展示;
         switch (response.getHeader().getProperty("Content-Type")) {
             case "text/plain":
@@ -50,7 +50,11 @@ public class OkHandler implements BaseHandler {
         if (null == response.getHeader().getProperty(ResponseHeader.CACHE_CONTROLL) ||
                 !response.getHeader()
                         .getProperty(ResponseHeader.CACHE_CONTROLL).equals("no-cache")) { //已指定不需要设置缓存
-            map.put("cache-location", FileUtils.cacheResponse(response, "/cache/"));
+            try {
+                map.put("cache-location", FileUtils.cacheResponse(response, "/cache/"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return map;
     }

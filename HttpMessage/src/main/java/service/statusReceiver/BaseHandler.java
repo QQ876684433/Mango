@@ -10,5 +10,5 @@ public interface BaseHandler {
      * 父接口
      *
      * @return*/
-    Map<String, Object> handleStatus(HttpResponse response) throws IOException;
+    Map<String, Object> handleStatus(HttpResponse response) ;
 }
