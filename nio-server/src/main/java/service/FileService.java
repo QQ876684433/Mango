@@ -107,7 +107,8 @@ public class FileService implements ServerService {
 
     // 根据文件名设置ContentType
     private void setContentType(HttpResponse response, String fileName) {
-        if (fileName.startsWith("imgs")) {
+        if (fileName.endsWith(".jpg") ||
+                fileName.endsWith(".png")) {
             response.addHeader(ResponseHeader.CONTENT_TYPE, "image/png");
         } else if (fileName.startsWith("musics")) {
             response.addHeader(ResponseHeader.CONTENT_TYPE, "audio/mp3");
