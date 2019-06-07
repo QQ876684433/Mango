@@ -170,7 +170,7 @@ public class RequestViewController {
 
             //缓存
             String cachedControl = response.getHeader().getProperty(ResponseHeader.CACHE_CONTROLL);
-            if (!cachedControl.equalsIgnoreCase("no-cache")) {
+            if (null != cachedControl && !cachedControl.equalsIgnoreCase("no-cache")) {
                 clientCache.cache(uri, response);
             }
 

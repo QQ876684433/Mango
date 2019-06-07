@@ -193,7 +193,7 @@ public class HttpResponse {
 
         // 解析响应报文实体部分
         try {
-            if (this.header.getProperty(RequestHeader.CONTENT_TYPE) != null)
+//            if (this.header.getProperty(RequestHeader.CONTENT_TYPE) != null)
                 this.responseBody = new HttpBody(
                         this.header.getProperty(RequestHeader.CONTENT_TYPE),
                         responseInputStream
@@ -201,7 +201,7 @@ public class HttpResponse {
         } catch (Exception e) {
             throw new HttpParseFailException("解析响应报文实体出错！");
         }
-        responseInputStream.close();
+//        responseInputStream.close();
     }
 
     /**

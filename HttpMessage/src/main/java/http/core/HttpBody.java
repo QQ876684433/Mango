@@ -33,7 +33,8 @@ public class HttpBody {
     }
 
     HttpBody(String contentType, InputStream content) throws Exception {
-        if (contentType.isEmpty()) throw new Exception("contentType不能为空！");
+//        if (contentType.isEmpty()) throw new Exception("contentType不能为空！");
+        if (null == contentType) contentType = "text/plain; charset=utf-8";
 
         this.mediaType = new MediaType(contentType);
         this.setContent(content);
@@ -60,7 +61,7 @@ public class HttpBody {
             int len = -1;
             len = is.read(buffer);
 //            while ((len = is.read(buffer)) != -1) {
-                output.write(buffer, 0, len);
+            output.write(buffer, 0, len);
 //            }
         } catch (IOException e) {
             e.printStackTrace();

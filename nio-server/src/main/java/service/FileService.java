@@ -89,7 +89,7 @@ public class FileService implements ServerService {
             if (fileName.length() == 0)
                 throw new FileNotFoundException();
 //            InputStream inputStream = new FileInputStream(new File(ServerConfig.ROOT_PATH + "/" + fileName));
-            InputStream inputStream = FileService.class.getClassLoader().getResourceAsStream("index.html");
+            InputStream inputStream = FileService.class.getClassLoader().getResourceAsStream(fileName);
             response.addHeader(ResponseHeader.CONTENT_LENGTH, ""+inputStream.available());
             // TODO add content-type
             response.addHeader(
