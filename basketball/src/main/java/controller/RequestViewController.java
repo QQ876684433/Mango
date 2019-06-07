@@ -7,6 +7,7 @@ import http.core.HttpResponse;
 import http.util.HttpMethod;
 import http.util.HttpStatus;
 import http.util.HttpVersion;
+import http.util.handler.DateUtils;
 import http.util.header.RequestHeader;
 import http.util.header.ResponseHeader;
 import javafx.fxml.FXML;
@@ -17,7 +18,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import model.CachedFile;
 import model.ParamTuple;
-import util.HttpDateUtil;
 import util.RequestContentHelper;
 import util.RequestHelper;
 import view.Prompt;
@@ -144,7 +144,7 @@ public class RequestViewController {
         if (cachedFile == null || cachedFile.isExpired()) {
             HttpRequest request = buildHttpRequest();
             if (cachedFile != null && cachedFile.isExpired()) {
-                request.setHeader(RequestHeader.IF_MODIFIED_SINCE, HttpDateUtil.format(cachedFile.getLastModifiedTime()));
+                request.setHeader(RequestHeader.IF_MODIFIED_SINCE, DateUtils.dateToStrDay(cachedFile.getLastModifiedTime()));
             }
             HttpService httpService = HttpService.getInstance();
             response = httpService.sendRequest(request, ip, port);
@@ -170,9 +170,12 @@ public class RequestViewController {
             }
 
             //缓存
-            String cachedControl = response.getHeader().getProperty(ResponseHeader.CACHE_CONTROLL);
-            if (null != cachedControl && !cachedControl.equalsIgnoreCase("no-cache")) {
-                clientCache.cache(uri, response);
+            int contentLength = Integer.parseInt(response.getHeader().getProperty(ResponseHeader.CONTENT_LENGTH));
+            if (response.getStatus() == HttpStatus.CODE_200 && contentLength > 0) {
+                String cachedControl = response.getHeader().getProperty(ResponseHeader.CACHE_CONTROLL);
+                if (null != cachedControl && !cachedControl.equalsIgnoreCase("no-cache")) {
+                    clientCache.cache(uri, response);
+                }
             }
 
             responseStage.setScene(new Scene(responseViewRoot, 850, 500));
@@ -212,11 +215,6 @@ public class RequestViewController {
      * @return 构造完毕的HttpRequest实例
      */
     private HttpRequest buildHttpRequest() throws Exception {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(this.getClass().getResource("/view/body_tab.fxml"));
-        Parent bodyTab = loader.load();
-
-        BodyTabController bodyTabController = loader.getController();
 
         HttpRequest request = new HttpRequest();
         request.setVersion(HttpVersion.HTTP_VERSION_1_1);

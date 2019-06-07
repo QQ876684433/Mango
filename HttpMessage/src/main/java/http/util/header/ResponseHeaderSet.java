@@ -1,4 +1,4 @@
-package util;
+package http.util.header;
 
 import lombok.Getter;
 

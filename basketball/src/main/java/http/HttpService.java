@@ -59,10 +59,11 @@ public class HttpService {
             request.writeTo(s.getOutputStream());
 //             在此处阻塞
             response = getResponseFromSocket(s);
-            displayResponse(response);
+
 
             //重定向
             if (response.getStatus() == HttpStatus.CODE_301 || response.getStatus() == HttpStatus.CODE_302) {
+                displayResponse(response);
                 originalUri = getOriginalUri(url);
                 String targetUri = response.getHeader().getProperty(ResponseHeader.LOCATION);
                 //更新重定向表
@@ -72,7 +73,6 @@ public class HttpService {
                 request.setUrl(targetUri + getParamString(url));
                 request.writeTo(s.getOutputStream());
                 response = getResponseFromSocket(s);
-//                displayResponse(response);
             }
 
 

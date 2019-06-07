@@ -60,5 +60,9 @@ public class DateUtils {
         return date;
     }
 
+    public static Date standardStrToDate(String str) {
+        return strToDate(str, "yyyy-MM-dd HH:mm:ss");
+    }
+
 }
 

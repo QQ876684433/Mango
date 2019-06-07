@@ -17,12 +17,10 @@ public class CachedFile {
     private Date lastModifiedTime;
     private int maxAge;
     private Date gainedTime;
-    private Date expires;
     private String contentLocation;
-    private String eTag;
 
     public boolean isExpired() {
         Date now = new Date();
-        return expires.before(now) || gainedTime.getTime() + maxAge * 10 < now.getTime();
+        return gainedTime.getTime() + maxAge * 10 < now.getTime();
     }
 }
