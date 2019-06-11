@@ -8,6 +8,28 @@
     <artifactId>basketball</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <parent>
+        <groupId>groupId</groupId>
+        <artifactId>Mango</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>mango</groupId>
+            <artifactId>http-message</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.9</version>
+        </dependency>
+
+    </dependencies>
+
 
     <build>
         <plugins>

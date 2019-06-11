@@ -1,4 +1,4 @@
-package service;
+package http.util.handler;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,6 +58,10 @@ public class DateUtils {
             e.printStackTrace();
         }
         return date;
+    }
+
+    public static Date standardStrToDate(String str) {
+        return strToDate(str, "yyyy-MM-dd HH:mm:ss");
     }
 
 }

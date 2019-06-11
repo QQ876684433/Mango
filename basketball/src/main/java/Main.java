@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.ParamTuple;
 
+
 public class Main extends Application {
 
     private ObservableList<ParamTuple> initParamTuples = FXCollections.observableArrayList();

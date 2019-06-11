@@ -26,6 +26,7 @@ public final class HttpStatus {
         MESSAGE.put(CODE_302, "Found");
         MESSAGE.put(CODE_304, "Not Modified");
         MESSAGE.put(CODE_404, "Not Found");
+        MESSAGE.put(CODE_405, "Method Not Allowed");
         MESSAGE.put(CODE_500, "Internal Server Error");
     }
 }

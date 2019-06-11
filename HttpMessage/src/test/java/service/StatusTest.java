@@ -19,7 +19,7 @@ public class StatusTest {
                 "uri to current resource";
         HttpResponse httpResponse = mockResponse(response);
         InputStream in = httpResponse.getResponseBodyStream();
-        String s = streamToString(in,"utf-8");
+        String s = streamToString(in, "utf-8");
         Assert.assertNotNull(httpResponse);
         Map map = StatusHandler.handle(httpResponse);
         Assert.assertEquals("uri to current resource\n", map.get("href"));
@@ -34,7 +34,8 @@ public class StatusTest {
                 "\n";
         HttpResponse httpResponse = mockResponse(response);
         Assert.assertNotNull(httpResponse);
-        Map ans = StatusHandler.handle(httpResponse);
+        Map ans = null;
+        ans = StatusHandler.handle(httpResponse);
         Assert.assertEquals(404, ans.get("status"));
     }
 
@@ -48,24 +49,30 @@ public class StatusTest {
                 "\n";
         HttpResponse httpResponse = mockResponse(response);
         Assert.assertNotNull(httpResponse);
-        Map ans = StatusHandler.handle(httpResponse);
+        Map ans = null;
+        ans = StatusHandler.handle(httpResponse);
         Assert.assertEquals(405, ans.get("status"));
         Assert.assertEquals("POST , PUT", ans.get("Allow")); //指定allow的方法类型
     }
 
     private HttpResponse mockResponse(String text) {
-        InputStream is = new ByteArrayInputStream(text.getBytes());
-        return new HttpResponse(is);
-    }
-    //字节流转为字符串的方法
-    private String streamToString(InputStream inputStream,String charset) {
         try {
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream,charset);
+            InputStream is = new ByteArrayInputStream(text.getBytes());
+            return new HttpResponse(is);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    //字节流转为字符串的方法
+    private String streamToString(InputStream inputStream, String charset) {
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, charset);
 
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String s = null;
             StringBuilder builder = new StringBuilder();
-            while ((s = bufferedReader.readLine()) != null){
+            while ((s = bufferedReader.readLine()) != null) {
                 builder.append(s);
             }
 
@@ -76,6 +83,6 @@ public class StatusTest {
             e.printStackTrace();
         }
 
-        return  null;
+        return null;
     }
 }

@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import model.DataStore;
 import model.ParamTuple;
 
 import java.io.File;
@@ -40,14 +41,20 @@ public class BodyTabController {
     private ChoiceBox<String> rawType;
     @FXML
     private AnchorPane contentPane;
+    @FXML
+    private ToggleGroup tg1;
+    @FXML
+    private Button storeBtn;
+
+    private int[] selectedBtn = DataStore.bodySelectedBtn;
 
     @FXML
     private void initialize() {
         noneBtn.setSelected(true);
         onSelectNone();
+        storeBtn.setVisible(false);
 
         noneBtn.setOnAction(event -> {
-            rawType.setVisible(false);
             onSelectNone();
         });
 
@@ -78,6 +85,61 @@ public class BodyTabController {
             rawType.setPrefWidth(width);
         });
 
+        storeBtn.setOnAction(event -> {
+            Node node;
+            switch (selectedBtn[0]) {
+                case 2:
+                    node = contentPane.getChildren().get(0);
+                    DataStore.getFormData().removeIf(o -> true);
+                    DataStore.getFormData().addAll(((TableView<ParamTuple>) node).getItems());
+                    break;
+                case 3:
+                    node = contentPane.getChildren().get(0);
+                    DataStore.getUrlEncoded().removeIf(o -> true);
+                    DataStore.getUrlEncoded().addAll(((TableView<ParamTuple>) node).getItems());
+                    break;
+                case 4:
+                    node = contentPane.getChildren().get(0);
+                    DataStore.setRaw(((TextArea) node).getText());
+                    DataStore.setRawType(rawType.getValue());
+                    break;
+                case 5:
+                    node = contentPane.getChildren().get(1);
+                    DataStore.setFilePath(((TextField) node).getText());
+                    break;
+                default:
+                    break;
+            }
+
+        });
+
+
+        tg1.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            switch (((RadioButton) tg1.getSelectedToggle()).getText()) {
+                case "none":
+                    selectedBtn[0] = 1;
+                    break;
+                case "form-data":
+                    selectedBtn[0] = 2;
+                    break;
+                case "x-www-form-urlencoded":
+                    selectedBtn[0] = 3;
+                    break;
+                case "raw":
+                    selectedBtn[0] = 4;
+                    break;
+                case "binary":
+                    selectedBtn[0] = 5;
+                    break;
+                default:
+                    selectedBtn[0] = 0;
+                    break;
+            }
+
+            storeBtn.setVisible(!((RadioButton) tg1.getSelectedToggle()).getText().equals("none"));
+        });
+
+
     }
 
 
@@ -101,6 +163,7 @@ public class BodyTabController {
             for (Node n : node.getChildrenUnmodifiable()) {
                 n.setLayoutY(n.getLayoutY() - 15);
             }
+
             ObservableList<ParamTuple> initItems = FXCollections.observableArrayList();
             initItems.add(new ParamTuple("key", "value", "description"));
             controller.setInitItems(initItems);
@@ -113,9 +176,11 @@ public class BodyTabController {
     private void onSelectRaw() {
         TextArea ta = new TextArea();
         ta.setLayoutX(1);
-        ta.setLayoutY(39);
-        ta.setPrefHeight(277);
+        ta.setLayoutY(30);
+        ta.setPrefHeight(230);
         ta.setPrefWidth(816);
+        updateContent(ta);
+
         updateContent(ta);
     }
 
@@ -166,5 +231,6 @@ public class BodyTabController {
         ObservableList<Node> children = contentPane.getChildren();
         children.addAll(Arrays.asList(node));
     }
+
 
 }

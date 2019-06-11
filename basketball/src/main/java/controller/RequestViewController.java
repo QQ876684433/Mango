@@ -1,14 +1,28 @@
 package controller;
 
+import http.ClientCache;
+import http.HttpService;
+import http.core.HttpRequest;
+import http.core.HttpResponse;
+import http.util.HttpMethod;
+import http.util.HttpStatus;
+import http.util.HttpVersion;
+import http.util.handler.DateUtils;
+import http.util.header.RequestHeader;
+import http.util.header.ResponseHeader;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.CachedFile;
 import model.ParamTuple;
+import util.RequestContentHelper;
+import util.RequestHelper;
 import view.Prompt;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import static util.ParamTupleTableHelper.*;
@@ -38,7 +52,7 @@ public class RequestViewController {
     private Button headerDeleteBtn;
 
     @FXML
-    private TextField urlTf;
+    private TextField addressTf;
 
     @FXML
     private TableView<ParamTuple> paramTable;
@@ -73,8 +87,6 @@ public class RequestViewController {
     @FXML
     private Tab bodyTab;
 
-//    private Main main;
-
     @FXML
     private void initialize() {
 
@@ -98,27 +110,81 @@ public class RequestViewController {
 
         methodBox.getSelectionModel().selectFirst();
 
+        sendButton.setOnAction(event -> {
+            try {
+                processRequest();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Prompt.display("异常", e.getMessage());
+            }
+        });
+
+
     }
 
 
-    @FXML
-    private void sendRequest() {
-        if (urlTf.getText().length() != 0) {
-            Prompt.display("已发送请求", "url: " + urlTf.getText());
-            Stage responseStage = new Stage();
-            responseStage.setTitle("Response");
-            FXMLLoader responseViewLoader = new FXMLLoader();
-            responseViewLoader.setLocation(this.getClass().getResource("/view/response_view.fxml"));
-            try {
-                Parent responseViewRoot = responseViewLoader.load();
-                responseStage.setScene(new Scene(responseViewRoot, 850, 500));
-                responseStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
+    /**
+     * 发送请求，得到响应，展示响应界面
+     *
+     * @throws Exception 各种过程中可能会产生的异常
+     */
+    private void processRequest() throws Exception {
+//            Prompt.display("已发送请求", "url: " + addressTf.getText());
+        check();
+
+        //格式判断
+        String ip = getIp();
+        int port = getPort();
+        if (!(0 <= port && port <= 65535))
+            throw new Exception("端口格式错误");
+        ClientCache clientCache = ClientCache.getInstance();
+        String uri = getUri();
+        CachedFile cachedFile = clientCache.getCachedFile(uri);
+        HttpResponse response = null;
+        if (cachedFile == null || cachedFile.isExpired()) {
+            HttpRequest request = buildHttpRequest();
+            if (cachedFile != null && cachedFile.isExpired()) {
+                request.setHeader(RequestHeader.IF_MODIFIED_SINCE, DateUtils.dateToStrDay(cachedFile.getLastModifiedTime()));
+            }
+            HttpService httpService = HttpService.getInstance();
+            response = httpService.sendRequest(request, ip, port);
+        }
+
+
+        Stage responseStage = new Stage();
+        responseStage.setTitle("Response");
+        FXMLLoader responseViewLoader = new FXMLLoader();
+        responseViewLoader.setLocation(this.getClass().getResource("/view/response_view.fxml"));
+
+        try {
+            Parent responseViewRoot = responseViewLoader.load();
+            ResponseViewController responseController = responseViewLoader.getController();
+            //读取缓存
+            if (cachedFile != null && !cachedFile.isExpired()) {
+                responseController.setBody(clientCache.getFileInputStream(cachedFile.getFileName()));
+            } else {
+                responseController.bindResponse(getUri(), response);
+                //可以继续使用缓存文件
+                if (response.getStatus() == HttpStatus.CODE_304)
+                    responseController.setBody(clientCache.getFileInputStream(cachedFile.getFileName()));
             }
 
-        } else
-            Prompt.display("错误", "请填写url");
+            //缓存
+            int contentLength = Integer.parseInt(response.getHeader().getProperty(ResponseHeader.CONTENT_LENGTH));
+            if (response.getStatus() == HttpStatus.CODE_200 && contentLength > 0) {
+                String cachedControl = response.getHeader().getProperty(ResponseHeader.CACHE_CONTROLL);
+                if (null != cachedControl && !cachedControl.equalsIgnoreCase("no-cache")) {
+                    clientCache.cache(uri, response);
+                }
+            }
+
+            responseStage.setScene(new Scene(responseViewRoot, 850, 500));
+            responseStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("读取响应界面fxml文件时发生异常");
+        }
+
     }
 
     @FXML
@@ -141,6 +207,80 @@ public class RequestViewController {
     private void onHeaderDelete() {
         int selectedIndex = headerTable.getSelectionModel().getSelectedIndex();
         headerTable.getItems().remove(selectedIndex);
+    }
+
+    /**
+     * 根据使用者的设置构建{@link HttpRequest}实例
+     *
+     * @return 构造完毕的HttpRequest实例
+     */
+    private HttpRequest buildHttpRequest() throws Exception {
+
+        HttpRequest request = new HttpRequest();
+        request.setVersion(HttpVersion.HTTP_VERSION_1_1);
+        request.setMethod(methodBox.getValue());
+        request.setUrl(
+                getUrl() + getParamString());
+
+        //TODO set request body
+        if (methodBox.getValue().equals(HttpMethod.POST)) {
+            request.setHeader(RequestHeader.CONTENT_TYPE, RequestContentHelper.getContentType());
+
+            byte[] content = RequestContentHelper.getContent();
+            int contentLength = content.length;
+            request.setRequestBody(new ByteArrayInputStream(content));
+            request.setHeader(RequestHeader.CONTENT_LENGTH, String.valueOf(contentLength));
+        }
+
+        request.setHeader(RequestHeader.ACCEPT, "*/*");
+        request.setHeader(RequestHeader.CONNECTION, "keep-alive");
+        request.setHeader(RequestHeader.KEEP_ALIVE, "timeout=300,max=10");
+        request.setHeader(RequestHeader.ACCEPT_ENCODING, "gzip, deflate");
+
+        //手动设置的header可以覆盖系统行为
+        headerTable.getItems()
+                .filtered(RequestHelper::validateHeader)
+                .forEach(o -> {
+                    request.setHeader(o.getKey(), o.getValue());
+                });
+
+
+        return request;
+    }
+
+    private void check() {
+        //TODO validate those parameters
+        if (addressTf.getText().length() == 0) {
+            throw new RuntimeException("请填写url");
+
+        }
+    }
+
+    private String getUrl() {
+        String raw = addressTf.getText();
+        return raw.substring(raw.indexOf("/"));
+    }
+
+    private String getUri() {
+        String url = getUrl();
+        if (url.contains("?"))
+            return url.substring(0, url.indexOf("?"));
+        return url;
+    }
+
+    private String getIp() {
+        String address = addressTf.getText();
+        return address.substring(0, address.indexOf(":"));
+    }
+
+    private int getPort() {
+        String address = addressTf.getText();
+        return Integer.parseInt(address.substring(address.indexOf(":") + 1, address.indexOf("/")));
+    }
+
+    private String getParamString() {
+        String part = RequestHelper.buildParamString(paramTable.getItems());
+        return part.length() == 0 ? "" : ("?" + part);
     }
 
 

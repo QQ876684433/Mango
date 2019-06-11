@@ -1,6 +1,7 @@
 package http.core;
 
 import com.sun.istack.internal.Nullable;
+import http.exception.HttpParseFailException;
 import http.util.HttpStatus;
 import http.util.header.RequestHeader;
 import http.util.header.ResponseHeader;
@@ -8,11 +9,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * HTTP响应报文类
@@ -63,9 +65,10 @@ public class HttpResponse {
 
     /**
      * 使用输入流构建HttpResponse对象
+     *
      * @param responseInputStream 响应报文输入流
      */
-    public HttpResponse(InputStream responseInputStream){
+    public HttpResponse(InputStream responseInputStream) throws IOException {
         this();
         this.parse(responseInputStream);
     }
@@ -77,8 +80,9 @@ public class HttpResponse {
 
     /**
      * 设置状态码，参考值
-     * @see HttpStatus
+     *
      * @param status 状态码
+     * @see HttpStatus
      */
     public void setStatus(int status) {
         // 自动设置status code对应的message
@@ -93,7 +97,8 @@ public class HttpResponse {
 
     /**
      * 支持链式调用
-     * @param key 首部键
+     *
+     * @param key   首部键
      * @param value 对应key的属性值
      * @return 返回HttpResponse实例本身，支持链式调用
      */
@@ -113,7 +118,9 @@ public class HttpResponse {
      * @return 响应实体文本内容
      */
     public String getResponseBodyText() {
-        if (this.responseBody == null) throw new NullPointerException("当前响应实体为空！");
+        if (this.responseBody == null) {
+            return "";
+        }
         return responseBody.getTextContent();
     }
 
@@ -123,7 +130,10 @@ public class HttpResponse {
      * @return 响应实体输入流
      */
     public InputStream getResponseBodyStream() {
-        if (this.responseBody == null) throw new NullPointerException("当前响应实体为空！");
+        if (this.responseBody == null) {
+            InputStream in = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
+            return in;
+        }
         return responseBody.getContent();
     }
 
@@ -160,9 +170,10 @@ public class HttpResponse {
 
     /**
      * 解析输入流，生成HttpResponse对象
+     *
      * @param responseInputStream Http响应报文输入流
      */
-    private void parse(InputStream responseInputStream){
+    private void parse(InputStream responseInputStream) throws IOException {
         // 解析响应报文起始行
         int buffer;
 
@@ -174,8 +185,8 @@ public class HttpResponse {
             String[] splits = new String(bf, Charset.defaultCharset()).split(" ");
             this.setVersion(splits[0]);
             this.setStatus(Integer.parseInt(splits[1]));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new HttpParseFailException("解析响应报文起始行出错！");
         }
 
         // 解析响应报文首部
@@ -188,15 +199,16 @@ public class HttpResponse {
                     responseInputStream
             );
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new HttpParseFailException("解析响应报文实体出错！");
         }
     }
 
     /**
      * 将HttpResponse对象写入到输出流中
+     *
      * @param outputStream 目的输出流
      */
-    public void writeTo(OutputStream outputStream){
+    public void writeTo(OutputStream outputStream) {
         PrintWriter pw = new PrintWriter(outputStream);
 
         // 输出请求报文起始行
@@ -205,22 +217,36 @@ public class HttpResponse {
         pw.println(this.getMessage());
 
         // 输出请求首部
-        String headers = this.getHeader().getHeaderText(this.responseBody.getMediaType().getCharset());
-        pw.println(headers);
+        String headers = this.getHeader().getHeaderText();
+        pw.print(headers);
 
         // 输出空行
         pw.println();
 
         // 处理请求实体
-        if (this.responseBody != null) {
-            pw.print(this.getResponseBodyText());
-        }
+//        if (this.responseBody.getMediaType().getMainType().equals("text") && this.responseBody != null) {
+//            pw.print(this.getResponseBodyText());
+//        }
 
         pw.flush();
     }
 
+    public void writeTo(SocketChannel socketChannel) throws IOException {
+        ByteBuffer bb = ByteBuffer.wrap(this.toString().getBytes());
+        socketChannel.write(bb);
+        InputStream is = this.getResponseBodyStream();
+        byte[] b = new byte[is.available()];
+        is.read(b);
+        ByteBuffer buffer = ByteBuffer.wrap(b);
+
+        System.out.println(this.toString());
+        int l = socketChannel.write(buffer);
+        System.out.println(l);
+    }
+
     /**
      * 将HttpResponse对象解析成HTTP报文
+     *
      * @return HTTP报文字符串
      */
     @Override

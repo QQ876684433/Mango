@@ -2,6 +2,7 @@ package service.statusReceiver;
 
 import http.core.HttpResponse;
 import http.util.HttpStatus;
+import http.util.header.ResponseHeader;
 import service.FileUtils;
 
 import java.io.IOException;
@@ -22,15 +23,15 @@ public class FoundHandler implements BaseHandler {
         try {
             Map<String, Object> ans = new HashMap<>();
             ans.put("status", HttpStatus.CODE_302);
-            if (null == response.getHeader().getProperty("Cache-Control") ||
+            if (null == response.getHeader().getProperty(ResponseHeader.CACHE_CONTROLL) ||
                     !response.getHeader()
-                            .getProperty("Cache-Control").equals("no-cache")) { //已指定不需要设置缓存
+                            .getProperty(ResponseHeader.CACHE_CONTROLL).equals("no-cache")) { //已指定不需要设置缓存
                 ans.put("cache-location", FileUtils.cacheResponse(response, "/cache/"));
             }
-            //响应头
-            ans.put("Response Headers", response.getHeader().getHeaderText(Charset.forName("utf-8")));
             //重定向路径
-            ans.put("href", response.getResponseBodyText());
+            ans.put("Response Headers", response.getHeader().getHeaderText(Charset.forName("utf-8")));
+            //不再修改,仍旧选用原有的uri
+            ans.put("href", response.getHeader().getProperty(ResponseHeader.LOCATION));
 
             return ans;
         } catch (IOException e) {

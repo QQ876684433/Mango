@@ -1,8 +1,10 @@
 package http.util.handler;
 
 import http.core.Header;
+import http.util.header.CommonHeader;
 import http.util.header.ResponseHeader;
 
+import java.util.Date;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,8 +15,8 @@ import java.util.regex.Pattern;
 abstract public class HttpUtils {
     private static final String CONNECTION_KEEP_ALIVE = "keep-alive";
     private static final String CONNECTION_CLOSE = "close";
-    private static final String KEEP_ALIVE_TIMEOUT = "timeout";
-    private static final String KEEP_ALIVE_MAX = "max";
+    public static final String KEEP_ALIVE_TIMEOUT = "timeout";
+    public static final String KEEP_ALIVE_MAX = "max";
 
     /**
      * HTTP请求报文或者HTTP响应报文首部实例
@@ -31,7 +33,7 @@ abstract public class HttpUtils {
      * @return keep-alive: true, close: false
      */
     public boolean isLongConnection() {
-        String conType = header.getProperty(ResponseHeader.CONTENT_TYPE);
+        String conType = header.getProperty(ResponseHeader.CONNECTION);
         return CONNECTION_KEEP_ALIVE.equalsIgnoreCase(conType);
     }
 
@@ -50,5 +52,15 @@ abstract public class HttpUtils {
             conProps.put(KEEP_ALIVE_MAX, matcher.group(2));
         }
         return conProps;
+    }
+
+    /**
+     * 获取报文的日期
+     *
+     * @return Date
+     */
+    public Date getMessageDate() {
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        return DateUtils.strToDate(header.getProperty(CommonHeader.DATE), pattern);
     }
 }

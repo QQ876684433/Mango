@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<redirections>
+    <!--    永久重定向-->
+    <redirection type="perm" source="/file/index.html" target="/file/new/index.html"/>
+    <redirection type="perm" source="/imgs" target="/newimgs"/>
+    <redirection type="perm" source="/imgs" target="/newimgs"/>
+
+    <!--    临时重定向-->
+    <redirection type="temp" source="/musics" target="/newmusics"/>
+    <redirection type="temp" source="/musics" target="/newmusics"/>
+</redirections>

@@ -1,12 +1,18 @@
 package http.core;
 
+import http.exception.HttpHeaderParseFailException;
+import http.util.handler.DateUtils;
+import http.util.header.CommonHeader;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * HTTP报文首部类
@@ -18,6 +24,7 @@ public class Header {
 
     Header() {
         this.headers = new HashMap<>();
+        this.headers.put(CommonHeader.DATE, DateUtils.dateToStrDay(new Date()));
     }
 
     /**
@@ -25,7 +32,7 @@ public class Header {
      *
      * @param is 首部输入流
      */
-    Header(InputStream is) {
+    Header(InputStream is) throws IOException {
         this();
 
         int buffer;
@@ -56,8 +63,19 @@ public class Header {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HttpHeaderParseFailException("解析首部出错！");
         }
+    }
+
+    /**
+     * 获取所有已经设置的首部
+     *
+     * @return 所有首部的键值对
+     */
+    public Properties getHeaders() {
+        Properties props = new Properties();
+        props.putAll(headers);
+        return props;
     }
 
     /**
@@ -87,7 +105,7 @@ public class Header {
     /**
      * 获取首部文本
      *
-     * @param charset
+     * @param charset 首部文本的编码
      * @return 首部文本
      */
     public String getHeaderText(Charset charset) {
@@ -96,8 +114,18 @@ public class Header {
     }
 
     /**
+     * 获取首部文本
+     *
+     * @return 首部文本
+     */
+    public String getHeaderText() {
+        return getHeaderText(Charset.defaultCharset());
+    }
+
+    /**
      * 获取首部输出流
      *
+     * @param charset 编码
      * @return 首部输出流
      */
     private OutputStream getHeaderOutputStream(Charset charset) {
@@ -113,5 +141,14 @@ public class Header {
             e.printStackTrace();
         }
         return os;
+    }
+
+    /**
+     * 获取首部输出流
+     *
+     * @return 首部输出流
+     */
+    private OutputStream getHeaderOutputStream() {
+        return getHeaderOutputStream(Charset.defaultCharset());
     }
 }

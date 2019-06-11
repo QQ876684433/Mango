@@ -2,6 +2,7 @@ package service.statusReceiver;
 
 import http.core.HttpResponse;
 import http.util.HttpStatus;
+import http.util.header.ResponseHeader;
 import service.FileUtils;
 
 import java.io.File;
@@ -40,15 +41,15 @@ public class MovPermHandler implements BaseHandler {
         try {
             Map<String, Object> ans = new HashMap<>();
             ans.put("status", HttpStatus.CODE_301);
-            if (null == response.getHeader().getProperty("Cache-Control") ||
-                    !response.getHeader()
-                            .getProperty("Cache-Control").equals("no-cache")) { //已指定不需要设置缓存
+            if (null == response.getHeader().getProperty(ResponseHeader.CACHE_CONTROLL) ||
+                    !"no-cache".equals(response.getHeader()
+                            .getProperty(ResponseHeader.CACHE_CONTROLL))) { //已指定不需要设置缓存
                 ans.put("cache-location", FileUtils.cacheResponse(response, "/cache/"));
             }
             //重定向路径
             ans.put("Response Headers", response.getHeader().getHeaderText(Charset.forName("utf-8")));
             //不再修改,仍旧选用原有的uri
-            ans.put("href", response.getResponseBodyText());
+            ans.put("href", response.getHeader().getProperty(ResponseHeader.LOCATION));
             return ans;
         } catch (IOException e) {
             e.printStackTrace();

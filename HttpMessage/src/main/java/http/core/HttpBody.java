@@ -33,7 +33,7 @@ public class HttpBody {
     }
 
     HttpBody(String contentType, InputStream content) throws Exception {
-        if (contentType.isEmpty()) throw new Exception("contentType不能为空！");
+        if (null == contentType) contentType = "text/plain; charset=utf-8";
 
         this.mediaType = new MediaType(contentType);
         this.setContent(content);
@@ -54,17 +54,16 @@ public class HttpBody {
      * @param is
      */
     void setContent(InputStream is) {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int len = -1;
+        byte[] buffer;
         try {
-            while ((len = is.read(buffer)) != -1) {
-                output.write(buffer, 0, len);
-            }
+            buffer = new byte[is.available()];
+            int len  = is.read(buffer);
+            this.content = new byte[len];
+
+            System.arraycopy(buffer, 0, this.content, 0, len);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.content = output.toByteArray();
     }
 
     /**
